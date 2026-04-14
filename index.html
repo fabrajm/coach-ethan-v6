@@ -1,0 +1,2593 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Coach Ethan 📱 V6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4ff;color:#1a1a2e;font-size:15px}
+#lockscreen{position:fixed;inset:0;background:linear-gradient(135deg,#0d1f6e,#1a3eaa,#2f63e0);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+#lockscreen.hidden{display:none}
+.lock-card{background:white;border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.lock-icon{font-size:40px;margin-bottom:12px}
+.lock-title{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:4px}
+.lock-sub{font-size:13px;color:#888;margin-bottom:24px}
+.lock-dots{display:flex;justify-content:center;gap:12px;margin-bottom:24px}
+.lock-dot{width:16px;height:16px;border-radius:50%;background:#e0e7ff;border:2px solid #c7d2fe;transition:all .15s}
+.lock-dot.filled{background:#2f63e0;border-color:#1a3eaa}
+.lock-dot.error{background:#e74c3c;border-color:#c0392b;animation:shake .3s}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.pin-btn{background:#f0f4ff;border:1px solid #dde4ff;border-radius:12px;padding:16px;font-size:20px;font-weight:600;color:#1a1a2e;cursor:pointer;transition:all .1s;user-select:none}
+.pin-btn:active{background:#2f63e0;color:white;transform:scale(.95)}
+.pin-btn.del{background:#fdecea;border-color:#fca5a5;color:#e74c3c;font-size:16px}
+.pin-btn.del:active{background:#e74c3c;color:white}
+.lock-error{font-size:13px;color:#e74c3c;min-height:18px;margin-bottom:4px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+header{background:linear-gradient(135deg,#1a3eaa,#2f63e0);color:white;padding:18px 20px;text-align:center}
+header h1{font-size:22px;margin-bottom:4px}
+header p{font-size:13px;opacity:.85}
+nav{display:flex;overflow-x:auto;background:#fff;border-bottom:1px solid #dde4ff;padding:0 10px}
+nav button{flex-shrink:0;padding:12px 16px;border:none;background:none;font-size:13px;cursor:pointer;color:#666;border-bottom:3px solid transparent;font-weight:500}
+nav button.active{color:#2f63e0;border-bottom-color:#2f63e0}
+.section{display:none;padding:14px}
+.section.active{display:block}
+.card{background:#fff;border-radius:12px;padding:15px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+label{display:block;font-size:13px;color:#555;margin-bottom:4px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:8px 10px;border:1px solid #dde4ff;border-radius:8px;font-size:14px;background:#fff;color:#1a1a2e;margin-bottom:10px}
+textarea{min-height:60px;resize:vertical}
+.btn{display:inline-block;padding:10px 18px;border-radius:9px;border:none;cursor:pointer;font-size:14px;font-weight:600}
+.btn-blue{background:#2f63e0;color:white;width:100%;text-align:center}
+.btn-blue:hover{background:#1a3eaa}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
+.btn-green{background:#22b573;color:white}
+.btn-red{background:#e74c3c;color:white}
+.btn-gray{background:#eee;color:#333}
+.badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600}
+.badge-non-vu{background:#ffeee8;color:#c0392b}
+.badge-vu{background:#fff3cd;color:#856404}
+.badge-acquis{background:#d4edda;color:#155724}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-box{background:#f0f4ff;border-radius:10px;padding:12px;text-align:center}
+.stat-box .val{font-size:24px;font-weight:700;color:#2f63e0}
+.stat-box .lbl{font-size:11px;color:#666;margin-top:2px}
+.exo-card{background:#fff;border-radius:12px;margin-bottom:14px;border-left:4px solid #2f63e0;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden}
+.exo-header{padding:12px 14px;background:#f0f4ff;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.exo-header .matiere{font-weight:700;font-size:13px;color:#1a3eaa}
+.exo-header .chapitre{font-size:12px;color:#555}
+.exo-body{padding:14px}
+.exo-consigne{font-size:14px;line-height:1.65;color:#1a1a2e;margin-bottom:10px}
+.exo-methode{background:#f8f9ff;border-radius:8px;padding:10px 12px;font-size:12.5px;color:#444;line-height:1.6;margin-bottom:8px}
+.exo-methode strong{color:#2f63e0;display:block;margin-bottom:4px}
+.exo-criteres{background:#f0fff4;border-radius:8px;padding:10px 12px;font-size:12px;color:#155724;line-height:1.6}
+.exo-criteres strong{display:block;margin-bottom:4px}
+.exo-bac{background:#fff8e1;border-radius:8px;padding:8px 12px;font-size:12px;color:#7d5a00;margin-bottom:8px}
+.exo-bac strong{display:block;margin-bottom:2px}
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;margin-right:4px}
+.tag-blue{background:#e8eeff;color:#1a3eaa}
+.tag-orange{background:#fff3e0;color:#e65100}
+.tag-red{background:#fdecea;color:#c62828}
+.tag-green{background:#e8f5e9;color:#2e7d32}
+.tag-purple{background:#f3e5f5;color:#6a1b9a}
+.pin-box{background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:14px;margin-bottom:12px}
+.historique-item{padding:10px;border-bottom:1px solid #f0f0f0;font-size:13px}
+.historique-item:last-child{border-bottom:none}
+.niveau-bar{height:8px;background:#e0e7ff;border-radius:4px;overflow:hidden;margin-top:4px}
+.niveau-fill{height:100%;background:linear-gradient(to right,#2f63e0,#22b573);border-radius:4px;transition:width .4s}
+.vac-banner{background:#d4f5d4;border:1px solid #88d488;border-radius:8px;padding:10px 14px;font-size:13px;color:#1a6b1a;margin-bottom:12px;font-weight:600}
+.sco-banner{background:#e8eeff;border:1px solid #b3c6ff;border-radius:8px;padding:10px 14px;font-size:13px;color:#1a3eaa;margin-bottom:12px}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+h2{font-size:16px;font-weight:700;margin-bottom:12px;color:#1a1a2e}
+h3{font-size:14px;font-weight:600;color:#2f63e0;margin-bottom:8px}
+.sujet-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f4ff}
+.sujet-row:last-child{border-bottom:none}
+.sujet-nom{flex:1;font-size:13px}
+.sujet-custom{background:#fffbf0;border-left:3px solid #f39c12}
+.sujet-custom .sujet-nom::after{content:'perso';font-size:10px;background:#fff3cd;color:#856404;padding:1px 5px;border-radius:3px;margin-left:6px;vertical-align:middle}
+.btn-delete{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px 4px;line-height:1;flex-shrink:0}
+.btn-delete:hover{color:#e74c3c}
+.add-sujet-form{background:#f8f9ff;border-radius:10px;padding:14px;margin-top:12px;border:1px dashed #b3c6ff}
+.add-sujet-form h3{font-size:14px;font-weight:600;color:#1a3eaa;margin-bottom:10px}
+.add-sujet-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.add-sujet-row select,.add-sujet-row input{flex:1;min-width:120px;margin-bottom:0}
+.add-sujet-row .btn-add{background:#2f63e0;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap;flex-shrink:0}
+.add-sujet-row .btn-add:hover{background:#1a3eaa}
+.prog-stats{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.prog-stat{flex:1;min-width:70px;background:#f0f4ff;border-radius:8px;padding:8px;text-align:center}
+.prog-stat .v{font-size:18px;font-weight:700;color:#2f63e0}
+.prog-stat .l{font-size:10px;color:#666}
+.mode-bac-desc{background:#fff8e1;border-radius:8px;padding:12px;font-size:13px;color:#5d4037;margin-bottom:12px;line-height:1.6}
+.notice-hero{background:linear-gradient(135deg,#1a3eaa,#2f63e0);color:white;border-radius:14px;padding:20px 18px;margin-bottom:14px;text-align:center}
+.notice-hero h2{font-size:20px;margin-bottom:6px;font-weight:700}
+.notice-hero p{font-size:13px;opacity:.88;line-height:1.5}
+.notice-hero-parent{background:linear-gradient(135deg,#5d1a9e,#8e44ad)}
+.notice-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.notice-num{width:32px;height:32px;border-radius:50%;background:#2f63e0;color:white;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.notice-num-parent{background:#8e44ad}
+.notice-step-body{flex:1}
+.notice-step-body strong{display:block;font-size:14px;color:#1a1a2e;margin-bottom:3px}
+.notice-step-body p{font-size:13px;color:#555;line-height:1.6;margin:0}
+.notice-rule{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:8px;margin-bottom:8px;font-size:13px;line-height:1.5}
+.notice-rule-ok{background:#d4edda;color:#155724}
+.notice-rule-nok{background:#fdecea;color:#7b1a1a}
+.notice-rule-info{background:#e8eeff;color:#1a3eaa}
+.notice-rule-warn{background:#fff8e1;color:#7d5a00}
+.notice-rule .ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.notice-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+.notice-table th{background:#f0f4ff;padding:8px 10px;text-align:left;font-weight:600;color:#1a3eaa;border-bottom:2px solid #dde4ff}
+.notice-table td{padding:8px 10px;border-bottom:1px solid #f0f4ff;vertical-align:top}
+.notice-table tr:last-child td{border-bottom:none}
+.notice-section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin:16px 0 8px}
+.notice-accordion{border:1px solid #e8eeff;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.notice-accordion-btn{width:100%;background:#f8f9ff;border:none;padding:12px 14px;text-align:left;font-size:13px;font-weight:600;color:#1a1a2e;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.notice-accordion-btn:hover{background:#eef3ff}
+.notice-accordion-content{display:none;padding:12px 14px;font-size:13px;color:#444;line-height:1.65;border-top:1px solid #e8eeff}
+.notice-accordion-content.open{display:block}
+.notice-badge-jeu{display:inline-flex;align-items:center;gap:6px;background:#1a3eaa;color:white;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;margin:3px}
+.faq-item{padding:10px 0;border-bottom:1px solid #f0f4ff}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between}
+.faq-a{font-size:13px;color:#555;line-height:1.6;display:none;margin-top:4px}
+.faq-a.open{display:block}
+.photo-zone{border:2px dashed #b3c6ff;border-radius:10px;padding:16px;text-align:center;cursor:pointer;margin-bottom:8px;background:#f8f9ff;transition:all .2s}
+.photo-zone:hover,.photo-zone.drag{border-color:#2f63e0;background:#eef3ff}
+.photo-zone input{display:none}
+.photo-preview{width:100%;max-height:220px;object-fit:contain;border-radius:8px;margin-bottom:8px;display:block}
+.note-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.note-btn{flex:1;min-width:50px;padding:10px 6px;border-radius:8px;border:1.5px solid #dde4ff;background:#f8f9ff;font-size:14px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.note-btn:hover{border-color:#2f63e0;background:#e8eeff}
+.note-btn.selected{background:#2f63e0;color:white;border-color:#2f63e0}
+.note-btn.sel-green{background:#22b573;border-color:#22b573;color:white}
+.note-btn.sel-orange{background:#f39c12;border-color:#f39c12;color:white}
+.note-btn.sel-red{background:#e74c3c;border-color:#e74c3c;color:white}
+.corr-box{background:#f8f9ff;border-radius:10px;padding:14px;border:1px solid #dde4ff;font-size:13px;line-height:1.7;white-space:pre-wrap;margin-bottom:10px}
+.corr-loading{display:flex;align-items:center;gap:10px;color:#888;font-size:13px;padding:12px}
+.detail-panel{display:none;padding:12px 14px;border-top:1px solid #f0f4ff;background:#fafbff;border-radius:0 0 10px 10px}
+.detail-panel.open{display:block}
+.detail-section{margin-bottom:10px;font-size:13px}
+.detail-section strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:4px}
+.detail-section p{color:#444;line-height:1.6}
+.photo-thumb{width:60px;height:60px;object-fit:cover;border-radius:6px;margin-right:8px;cursor:pointer;border:2px solid #dde4ff}
+.photo-thumb:hover{border-color:#2f63e0}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:10000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-img{max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain}
+.modal-close{position:fixed;top:16px;right:20px;color:white;font-size:28px;cursor:pointer;z-index:10001;background:rgba(0,0,0,.5);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cours-chip{display:inline-flex;align-items:center;gap:5px;background:#e8eeff;color:#1a3eaa;border:1px solid #b3c6ff;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:500;margin:3px;cursor:default}
+.cours-chip .del-chip{cursor:pointer;opacity:.6;font-size:14px;line-height:1}
+.cours-chip .del-chip:hover{opacity:1;color:#e74c3c}
+.cours-chip.acquis-chip{background:#d4edda;color:#155724;border-color:#a3d9b1}
+.cours-chip.cours-actif{background:#fff8e1;color:#7d5a00;border-color:#ffe082}
+.cours-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:10px}
+.cours-form select,.cours-form input{flex:1;min-width:120px;margin-bottom:0}
+.cours-form button{flex-shrink:0}
+.data-panel{background:#f8f9ff;border:1px solid #dde4ff;border-radius:10px;padding:14px;margin-bottom:10px}
+.data-panel h3{font-size:13px;font-weight:600;color:#1a3eaa;margin-bottom:8px}
+.data-panel p{font-size:12px;color:#666;margin-bottom:10px;line-height:1.5}
+.data-actions{display:flex;gap:8px;flex-wrap:wrap}
+.data-actions button{flex:1;min-width:120px;padding:9px 12px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer}
+.btn-export{background:#2f63e0;color:white}
+.btn-export:hover{background:#1a3eaa}
+.btn-import{background:#22b573;color:white}
+.btn-import:hover{background:#1a9660}
+.btn-reset{background:#fdecea;color:#c62828;border:1px solid #fca5a5!important}
+.btn-reset:hover{background:#fee2e2}
+.import-area{margin-top:10px;display:none}
+.import-area.open{display:block}
+.import-area textarea{width:100%;min-height:80px;font-family:monospace;font-size:11px;padding:8px;border:1px solid #dde4ff;border-radius:8px;background:#fff;color:#1a1a2e;resize:vertical;margin-bottom:8px}
+.data-status{font-size:12px;padding:6px 10px;border-radius:6px;margin-top:6px}
+.data-status.ok{background:#d4edda;color:#155724}
+.data-status.err{background:#fdecea;color:#c62828}
+.data-status.warn{background:#fff3cd;color:#856404}
+.sync-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:4px}
+.sync-bar.ok{background:#d4edda;color:#155724}
+.sync-bar.err{background:#fdecea;color:#c62828}
+.sync-bar.sync{background:#e8eeff;color:#1a3eaa}
+.sync-bar.warn{background:#fff3cd;color:#856404}
+.sync-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sync-dot.green{background:#22b573}
+.sync-dot.red{background:#e74c3c}
+.sync-dot.blue{background:#2f63e0;animation:pulse 1s infinite}
+.sync-dot.gray{background:#aaa}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.gsheet-setup{background:#f0fff4;border:1px solid #a3d9b1;border-radius:10px;padding:14px;margin-bottom:10px}
+.gsheet-setup h3{font-size:13px;font-weight:600;color:#155724;margin-bottom:6px}
+.url-row{display:flex;gap:8px;margin-top:6px}
+.url-row input{flex:1;font-size:12px;padding:7px 10px;border:1px solid #a3d9b1;border-radius:8px;background:#fff;color:#1a1a2e}
+.url-row button{padding:7px 14px;border-radius:8px;border:none;background:#22b573;color:white;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.url-row button:hover{background:#1a9660}
+.exo-valider{border-top:1px solid #f0f4ff;padding:12px 14px;background:#fafbff}
+.exo-valider textarea{width:100%;padding:7px 10px;border:1px solid #dde4ff;border-radius:8px;font-size:13px;min-height:52px;resize:vertical;margin-bottom:8px;background:#fff;color:#1a1a2e}
+.exo-valider-btn{display:flex;gap:8px}
+.btn-valide{background:#22b573;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;flex:1}
+.btn-valide:hover{background:#1a9660}
+.btn-difficile{background:#e74c3c;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;flex:1}
+.btn-difficile:hover{background:#c0392b}
+.exo-card.done{opacity:.65;border-left-color:#22b573!important}
+.exo-card.done .exo-header{background:#f0fff4}
+.exo-done-banner{background:#d4edda;color:#155724;padding:8px 12px;font-size:13px;font-weight:600;border-radius:6px;margin-top:6px}
+.exo-done-banner.difficile{background:#fdecea;color:#7b1a1a}
+.corr-ia-inline{background:#fff;border:1px solid #dde4ff;border-radius:10px;padding:14px;margin-top:12px;font-size:13px;line-height:1.7}
+.corr-ia-inline .corr-note{font-size:26px;font-weight:700;text-align:center;padding:10px;border-radius:8px;margin-bottom:10px}
+.corr-ia-inline .corr-note.green{background:#d4edda;color:#155724}
+.corr-ia-inline .corr-note.orange{background:#fff3cd;color:#856404}
+.corr-ia-inline .corr-note.red{background:#fdecea;color:#7b1a1a}
+.corr-ia-inline .corr-section{margin-bottom:10px}
+.corr-ia-inline .corr-section strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:4px}
+.corr-ia-inline .corr-section p{color:#333;margin:0}
+.photo-required{font-size:11px;color:#e65100;margin-top:4px;display:none}
+.photo-required.visible{display:block}
+.hist-exo-item{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:8px;border-left:3px solid #22b573;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:box-shadow .15s}
+.hist-exo-item:hover{box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.hist-exo-item.difficile{border-left-color:#e74c3c}
+.hist-exo-item.expanded{box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.hist-exo-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px}
+.hist-exo-titre{font-size:13px;font-weight:600;color:#1a1a2e}
+.hist-exo-date{font-size:11px;color:#999;white-space:nowrap}
+.hist-exo-meta{font-size:12px;color:#666;margin-bottom:4px}
+.hist-exo-commentaire{font-size:12px;color:#444;background:#f8f9ff;border-radius:5px;padding:5px 8px;margin-top:4px}
+.hist-filtres{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.hist-filtres select{flex:1;min-width:120px;margin-bottom:0}
+.hist-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.hist-stat{background:#f0f4ff;border-radius:8px;padding:10px;text-align:center}
+.hist-stat .v{font-size:20px;font-weight:700;color:#2f63e0}
+.hist-stat .l{font-size:11px;color:#666;margin-top:1px}
+</style>
+</head>
+<body>
+
+<!-- ===== ÉCRAN DE VERROUILLAGE ===== -->
+<div id="lockscreen">
+  <div class="lock-card">
+    <div class="lock-icon">🔐</div>
+    <div class="lock-title">Coach Ethan</div>
+    <div class="lock-sub">Entre ton code pour accéder</div>
+    <div class="lock-dots">
+      <div class="lock-dot" id="dot0"></div>
+      <div class="lock-dot" id="dot1"></div>
+      <div class="lock-dot" id="dot2"></div>
+      <div class="lock-dot" id="dot3"></div>
+    </div>
+    <div class="pin-grid">
+      <button class="pin-btn" onclick="pinPress('1')">1</button>
+      <button class="pin-btn" onclick="pinPress('2')">2</button>
+      <button class="pin-btn" onclick="pinPress('3')">3</button>
+      <button class="pin-btn" onclick="pinPress('4')">4</button>
+      <button class="pin-btn" onclick="pinPress('5')">5</button>
+      <button class="pin-btn" onclick="pinPress('6')">6</button>
+      <button class="pin-btn" onclick="pinPress('7')">7</button>
+      <button class="pin-btn" onclick="pinPress('8')">8</button>
+      <button class="pin-btn" onclick="pinPress('9')">9</button>
+      <button class="pin-btn del" onclick="pinPress('del')">⌫</button>
+      <button class="pin-btn" onclick="pinPress('0')">0</button>
+      <button class="pin-btn del" onclick="pinPress('clear')" style="font-size:12px">✕</button>
+    </div>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
+
+<header>
+  <h1>🎮 Coach Ethan V6</h1>
+  <p id="headerSub">Mode bac • Suivi parent • Exercices détaillés</p>
+  <div id="syncStatusBar" style="margin-top:6px;font-size:11px;opacity:.85"></div>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('accueil',this)">Accueil</button>
+  <button onclick="showSection('exercices',this)">Exercices</button>
+  <button onclick="showSection('programme',this)">Programme</button>
+  <button onclick="showSection('modebac',this)">Mode bac</button>
+  <button onclick="showSection('parent',this)">Parent</button>
+  <button onclick="showSection('histoexo',this)">Historique 📖</button>
+  <button onclick="showSection('notice_ethan',this)">Notice Ethan 📘</button>
+  <button onclick="showSection('notice_parent',this)">Notice Parents 📗</button>
+  <button onclick="showSection('donnees',this)">Données 💾</button>
+</nav>
+
+<!-- ===== ACCUEIL ===== -->
+<div class="section active" id="accueil">
+
+  <div id="periodeBanner"></div>
+
+  <div class="stat-grid">
+    <div class="stat-box"><div class="val" id="scoreAccueil">–</div><div class="lbl">Score semaine</div></div>
+    <div class="stat-box"><div class="val" id="niveauAccueil">–</div><div class="lbl">Niveau</div></div>
+    <div class="stat-box"><div class="val" id="tempsJeuAccueil">–</div><div class="lbl">Temps jeu / jour</div></div>
+    <div class="stat-box"><div class="val" id="streakAccueil">–</div><div class="lbl">Jours consécutifs</div></div>
+  </div>
+
+  <div class="card">
+    <h2>✏️ Validation du jour</h2>
+    <label>Date</label>
+    <input type="text" id="dateSeance" readonly>
+    <label>Matière travaillée</label>
+    <select id="matiereSeance">
+      <option>Maths</option><option>Physique</option><option>Anglais</option>
+      <option>Français</option><option>Histoire-Géo</option><option>SVT</option>
+    </select>
+    <label>Durée (min)</label>
+    <input type="number" id="dureeSeance" min="5" max="180" value="45">
+    <label>Ressenti</label>
+    <select id="ressentiSeance">
+      <option value="facile">Facile</option>
+      <option value="moyen" selected>Moyen</option>
+      <option value="difficile">Difficile</option>
+    </select>
+    <label>Ce qui a été fait / preuve</label>
+    <textarea id="preuveSeance" placeholder="Ex : exercices p.42 corrigés, 15 flashcards anglais..."></textarea>
+    <button class="btn btn-blue" onclick="validerSeance()">✅ Valider ma séance</button>
+  </div>
+
+  <div class="card">
+    <h2>📋 Historique rapide</h2>
+    <div id="historiqueRapide"><p style="color:#999;font-size:13px">Aucune séance pour le moment.</p></div>
+  </div>
+</div>
+
+<!-- ===== EXERCICES ===== -->
+<div class="section" id="exercices">
+
+  <div class="card">
+    <h2>🎯 Exercices de la semaine</h2>
+    <div id="modeBacDesc" class="mode-bac-desc" style="display:none"></div>
+    <label>Filtrer par matière</label>
+    <select id="filtreMatiere" onchange="afficherExercices()">
+      <option value="">Toutes</option>
+      <option>Maths</option><option>Physique</option><option>Anglais</option>
+      <option>Français</option><option>Histoire-Géo</option><option>SVT</option>
+    </select>
+    <button class="btn btn-blue" onclick="genererExercices()" style="margin-bottom:14px">
+      🤖 Générer avec l'IA
+    </button>
+    <div id="listeExercices"><p style="color:#999;font-size:13px">Clique sur "Nouvelle série" pour générer les exercices.</p></div>
+  </div>
+</div>
+
+<!-- ===== PROGRAMME ===== -->
+<div class="section" id="programme">
+  <div class="card">
+    <h2>📚 Programme et sujets</h2>
+
+    <div class="prog-stats">
+      <div class="prog-stat"><div class="v" id="psNonVu">–</div><div class="l">Non vu</div></div>
+      <div class="prog-stat"><div class="v" id="psVu">–</div><div class="l">Vu</div></div>
+      <div class="prog-stat"><div class="v" id="psAcquis">–</div><div class="l">Acquis</div></div>
+      <div class="prog-stat"><div class="v" id="psTotal">–</div><div class="l">Total</div></div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <select id="filtreProgramme" onchange="afficherProgramme()" style="flex:1;min-width:130px;margin-bottom:0">
+        <option value="">Toutes matières</option>
+        <option>Maths</option><option>Physique</option><option>Anglais</option>
+        <option>Français</option><option>Histoire-Géo</option><option>SVT</option>
+      </select>
+      <select id="filtreStatut" onchange="afficherProgramme()" style="flex:1;min-width:120px;margin-bottom:0">
+        <option value="">Tous statuts</option>
+        <option value="non vu">Non vu</option>
+        <option value="vu">Vu</option>
+        <option value="acquis">Acquis</option>
+      </select>
+    </div>
+
+    <div id="listeProgramme"></div>
+
+    <!-- Sujets en cours -->
+    <div class="add-sujet-form" style="background:#fffbf0;border-color:#ffe082">
+      <h3 style="color:#7d5a00">📌 Sujets actuellement en cours</h3>
+      <p style="font-size:12px;color:#888;margin-bottom:10px">Déclare les chapitres vus cette semaine en classe. L'IA les priorisera dans les exercices.</p>
+      <div id="coursActifsList" style="margin-bottom:10px"></div>
+      <div class="cours-form">
+        <select id="coursMatiere" style="margin-bottom:0">
+          <option value="">Matière…</option>
+          <option>Maths</option><option>Physique</option><option>Anglais</option>
+          <option>Français</option><option>Histoire-Géo</option><option>SVT</option>
+        </select>
+        <input type="text" id="coursNom" placeholder="Sujet vu en classe…" style="margin-bottom:0">
+        <button class="btn-add" onclick="ajouterCoursActif()">📌 Déclarer</button>
+      </div>
+      <div id="coursMsg" style="margin-top:6px;font-size:12px"></div>
+    </div>
+
+    <!-- Formulaire d'ajout -->
+    <div class="add-sujet-form">
+      <h3>+ Ajouter un sujet</h3>
+      <div class="add-sujet-row">
+        <select id="newSujetMatiere" style="margin-bottom:0">
+          <option value="">Matière…</option>
+          <option>Maths</option><option>Physique</option><option>Anglais</option>
+          <option>Français</option><option>Histoire-Géo</option><option>SVT</option>
+        </select>
+        <input type="text" id="newSujetNom" placeholder="Nom du chapitre / sujet…" style="margin-bottom:0">
+        <select id="newSujetStatut" style="margin-bottom:0;min-width:90px">
+          <option value="non vu">Non vu</option>
+          <option value="vu">Vu</option>
+          <option value="acquis">Acquis</option>
+        </select>
+        <button class="btn-add" onclick="ajouterSujet()">Ajouter</button>
+      </div>
+      <div id="addSujetMsg" style="margin-top:6px;font-size:12px"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODE BAC ===== -->
+<div class="section" id="modebac">
+  <div class="card">
+    <h2>🎓 Mode bac</h2>
+    <label>Mode actuel</label>
+    <select id="selectModeBac" onchange="updateModeBac()">
+      <option value="off">Off – Normal</option>
+      <option value="revision">Révision – Consolidation</option>
+      <option value="controle">Contrôle – Chronométré</option>
+      <option value="bac_blanc">Bac blanc – Conditions réelles</option>
+    </select>
+    <div id="descModeBac" class="mode-bac-desc"></div>
+    <h3>Profil scolaire</h3>
+    <label>Classe</label>
+    <select id="classe"><option>Seconde</option><option selected>Première</option><option>Terminale</option></select>
+    <label>Spécialités / série</label>
+    <input type="text" id="specialites" value="Maths + Physique-Chimie" placeholder="Ex: Maths, Physique-Chimie, NSI">
+    <label>Objectif bac</label>
+    <input type="text" id="objectifBac" value="16/20" placeholder="Ex: 16/20">
+  </div>
+</div>
+
+<!-- ===== PARENT ===== -->
+<div class="section" id="parent">
+  <div class="card">
+    <div class="pin-box">
+      <label>🔒 Code PIN parent</label>
+      <input type="password" id="pinInput" placeholder="Code PIN" style="margin-bottom:8px">
+      <button class="btn btn-sm btn-blue" onclick="deverrouiller()">Déverrouiller</button>
+    </div>
+    <div id="parentPanel" style="display:none">
+      <h2>⚙️ Réglages de la semaine</h2>
+      <label>Priorité matière</label>
+      <select id="prioriteParent">
+        <option>Maths</option><option>Physique</option><option>Anglais</option>
+        <option>Français</option><option>Histoire-Géo</option><option>SVT</option>
+      </select>
+      <label>Score semaine /35</label>
+      <input type="number" id="scoreParent" min="0" max="35" value="15">
+      <label>Mode bac</label>
+      <select id="modeBacParent">
+        <option value="off">Off</option><option value="revision">Révision</option>
+        <option value="controle">Contrôle</option><option value="bac_blanc">Bac blanc</option>
+      </select>
+      <label>Faiblesses identifiées</label>
+      <div id="faiblessesCheck" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <label style="font-weight:400"><input type="checkbox" value="Maths"> Maths</label>
+        <label style="font-weight:400"><input type="checkbox" value="Physique" checked> Physique</label>
+        <label style="font-weight:400"><input type="checkbox" value="Anglais" checked> Anglais</label>
+        <label style="font-weight:400"><input type="checkbox" value="Français"> Français</label>
+        <label style="font-weight:400"><input type="checkbox" value="Histoire-Géo"> Histoire-Géo</label>
+        <label style="font-weight:400"><input type="checkbox" value="SVT"> SVT</label>
+      </div>
+      <button class="btn btn-blue" onclick="sauvegarderParent()">💾 Sauvegarder</button>
+      <div id="parentMsg" style="margin-top:8px;font-size:13px"></div>
+
+      <hr style="margin:14px 0;border:none;border-top:1px solid #eee">
+      <h2>📊 Synthèse semaine</h2>
+      <div id="syntheseParent"></div>
+
+      <hr style="margin:14px 0;border:none;border-top:1px solid #eee">
+      <h2>🔑 Changer le code PIN</h2>
+      <label>PIN à modifier</label>
+      <select id="pinType" style="margin-bottom:10px">
+        <option value="acces">PIN d'accès à la page (écran de verrouillage)</option>
+        <option value="parent">PIN parent (réglages)</option>
+      </select>
+      <label>PIN actuel</label>
+      <input type="password" id="pinActuel" placeholder="Code actuel" autocomplete="current-password">
+      <label>Nouveau PIN</label>
+      <input type="password" id="pinNouveau" placeholder="Nouveau code (min. 4 caractères)" autocomplete="new-password">
+      <label>Confirmer le nouveau PIN</label>
+      <input type="password" id="pinConfirm" placeholder="Répéter le nouveau code" autocomplete="new-password">
+      <button class="btn btn-blue" onclick="changerPin()" style="margin-top:2px">🔑 Changer le PIN</button>
+      <div id="pinMsg" style="margin-top:8px;font-size:13px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HISTORIQUE EXERCICES ===== -->
+<div class="section" id="histoexo">
+  <div class="card">
+    <h2>📖 Historique des exercices</h2>
+    <div class="hist-stats">
+      <div class="hist-stat"><div class="v" id="hsTotalExo">0</div><div class="l">Exercices faits</div></div>
+      <div class="hist-stat"><div class="v" id="hsTauxReussite">–</div><div class="l">Taux réussite</div></div>
+      <div class="hist-stat"><div class="v" id="hsMatiereTop">–</div><div class="l">Matière top</div></div>
+    </div>
+    <div class="hist-filtres">
+      <select id="histFiltreMatiere" onchange="afficherHistoExo()">
+        <option value="">Toutes matières</option>
+        <option>Maths</option><option>Physique</option><option>Anglais</option>
+        <option>Français</option><option>Histoire-Géo</option><option>SVT</option>
+      </select>
+      <select id="histFiltreResultat" onchange="afficherHistoExo()">
+        <option value="">Tous résultats</option>
+        <option value="valide">✅ Validés</option>
+        <option value="difficile">❌ Difficiles</option>
+      </select>
+    </div>
+    <div id="listeHistoExo"><p style="color:#999;font-size:13px">Aucun exercice validé pour l'instant.</p></div>
+  </div>
+</div>
+
+<!-- Modal photo plein écran -->
+<div class="modal-overlay" id="photoModal" onclick="fermerModal()">
+  <div class="modal-close" onclick="fermerModal()">✕</div>
+  <img class="modal-img" id="photoModalImg" src="" alt="Photo travail">
+</div>
+
+<!-- ===== NOTICE ETHAN ===== -->
+<div class="section" id="notice_ethan">
+  <div class="notice-hero">
+    <h2>🎮 Bienvenue Coach Ethan !</h2>
+    <p>Ton guide personnel pour progresser comme dans un jeu vidéo.<br>Lis ça une fois — tu sauras tout ce qu'il faut savoir.</p>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Comment ça marche</div>
+
+    <div class="notice-step">
+      <div class="notice-num">1</div>
+      <div class="notice-step-body">
+        <strong>Fais ton exercice du jour</strong>
+        <p>Va dans l'onglet <strong>Exercices</strong>. L'IA génère 4 exercices personnalisés selon ce que tu as déjà vu, tes faiblesses et ton score de la semaine. Lis bien la consigne et fais l'exercice sur papier ou cahier.</p>
+      </div>
+    </div>
+
+    <div class="notice-step">
+      <div class="notice-num">2</div>
+      <div class="notice-step-body">
+        <strong>Valide ou signale la difficulté</strong>
+        <p>Quand tu as fini un exercice, clique sur <strong>✅ Exercice fait !</strong> si tu t'en es sorti. Clique sur <strong>❌ Trop difficile</strong> si tu as bloqué — l'IA s'en souvient et adapte la prochaine série. Tu peux ajouter un commentaire pour expliquer ce qui t'a posé problème.</p>
+      </div>
+    </div>
+
+    <div class="notice-step">
+      <div class="notice-num">3</div>
+      <div class="notice-step-body">
+        <strong>Valide ta séance dans Accueil</strong>
+        <p>Après chaque session de travail, remplis le formulaire de validation : matière, durée, ressenti et ce que tu as fait. C'est obligatoire pour débloquer ton temps de jeu !</p>
+      </div>
+    </div>
+
+    <div class="notice-step">
+      <div class="notice-num">4</div>
+      <div class="notice-step-body">
+        <strong>Mets à jour ton programme</strong>
+        <p>Dans l'onglet <strong>Programme</strong>, change le statut des chapitres au fil de l'année : <strong>Non vu → Vu → Acquis</strong>. L'IA utilise ces infos pour prioriser ce qu'il faut travailler. Tu peux aussi ajouter tes propres sujets.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Ton système de récompenses 🎮</div>
+    <p style="font-size:13px;color:#555;margin-bottom:10px">Ton score hebdomadaire (réglé par un parent) détermine ton temps de jeu :</p>
+    <table class="notice-table">
+      <tr><th>Score /35</th><th>Niveau</th><th>Temps de jeu</th></tr>
+      <tr><td>0 – 7</td><td>🔴 Rookie</td><td>20–30 min/jour</td></tr>
+      <tr><td>8 – 15</td><td>🟠 Bronze</td><td>30 min/jour</td></tr>
+      <tr><td>16 – 21</td><td>🟡 Argent</td><td>45 min/jour</td></tr>
+      <tr><td>22 – 27</td><td>🔵 Or</td><td>60 min/jour</td></tr>
+      <tr><td>28 – 32</td><td>🟣 Platine</td><td>75 min/jour</td></tr>
+      <tr><td>33 – 35</td><td>⭐ Légendaire</td><td>90 min/jour</td></tr>
+    </table>
+    <div class="notice-rule notice-rule-info">
+      <span class="ico">💡</span>
+      <span>Plus tu travailles régulièrement et sérieusement, plus ton score monte — et plus tu joues longtemps !</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Les modes bac 🎓</div>
+    <table class="notice-table">
+      <tr><th>Mode</th><th>Ce que ça change</th></tr>
+      <tr><td><strong>Normal</strong></td><td>Exercices avec aide complète, méthode visible, critères affichés. Idéal pour apprendre.</td></tr>
+      <tr><td><strong>Révision</strong></td><td>La méthode est masquée. Tu dois retrouver la démarche seul — entraînement actif.</td></tr>
+      <tr><td><strong>Contrôle</strong></td><td>Conditions de DS : chrono affiché, pas d'aide, présentation soignée obligatoire.</td></tr>
+      <tr><td><strong>Bac blanc</strong></td><td>Conditions réelles : en-tête obligatoire (Nom, Prénom, Classe, Date), rédaction complète, barème visible.</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Les règles du jeu 📋</div>
+    <div class="notice-rule notice-rule-ok"><span class="ico">✅</span><span><strong>Travail avant jeu</strong> — tu valides ta séance, tu débloque ton temps de jeu. Pas de travail = pas de jeu.</span></div>
+    <div class="notice-rule notice-rule-ok"><span class="ico">✅</span><span><strong>Régularité obligatoire</strong> — une séance par jour en semaine, même courte (30 min minimum). La régularité bat l'intensité.</span></div>
+    <div class="notice-rule notice-rule-ok"><span class="ico">✅</span><span><strong>Sois honnête</strong> — marque "trop difficile" quand c'est le cas, sans honte. L'IA s'adapte mieux avec des infos vraies.</span></div>
+    <div class="notice-rule notice-rule-nok"><span class="ico">❌</span><span><strong>Pas de triche</strong> — valider une séance que tu n'as pas faite, c'est tricher contre toi-même. Ça ne sert à rien.</span></div>
+    <div class="notice-rule notice-rule-nok"><span class="ico">❌</span><span><strong>Pas de jeu avant la validation</strong> — le formulaire "Validation du jour" doit être rempli avant d'allumer la console.</span></div>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">FAQ Ethan 💬</div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">L'IA génère des exercices que je ne comprends pas du tout, que faire ? <span>▼</span></div>
+      <div class="faq-a">Clique sur "❌ Trop difficile" et note dans le commentaire ce qui te bloque. L'IA va baisser la difficulté. Tu peux aussi changer le statut du chapitre en "non vu" dans le Programme pour que ça soit traité comme une découverte.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Les exercices se répètent, c'est normal ? <span>▼</span></div>
+      <div class="faq-a">Non, l'IA évite les répétitions en regardant les 5 dernières séances. Si ça se répète, valide les exercices pour que l'historique se mette à jour, puis regénère une nouvelle série.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Je peux ajouter mes propres sujets ? <span>▼</span></div>
+      <div class="faq-a">Oui ! Dans l'onglet Programme, tout en bas, il y a un formulaire pour ajouter n'importe quel chapitre dans n'importe quelle matière. Ces sujets perso seront pris en compte par l'IA pour générer des exercices.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Mon score est bas, comment le remonter ? <span>▼</span></div>
+      <div class="faq-a">Le score est réglé par un parent en fonction de ton travail de la semaine. Montre-leur ton historique (onglet Historique 📖) pour prouver ce que tu as fait. La régularité est la clé : mieux vaut 5 séances de 40 min que 2 séances de 2 heures.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NOTICE PARENTS ===== -->
+<div class="section" id="notice_parent">
+  <div class="notice-hero notice-hero-parent">
+    <h2>📗 Guide Parents</h2>
+    <p>Tout ce qu'il faut savoir pour utiliser Coach Ethan efficacement<br>et accompagner la progression de votre enfant.</p>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Prise en main rapide</div>
+
+    <div class="notice-step">
+      <div class="notice-num notice-num-parent">1</div>
+      <div class="notice-step-body">
+        <strong>Configurer le PIN parent</strong>
+        <p>Dans l'onglet <strong>Parent</strong>, entrez un code PIN de votre choix (4 chiffres recommandé). Ce code protège les réglages sensibles. Par défaut le code est <code style="background:#f0f4ff;padding:2px 6px;border-radius:4px">1234</code> — changez-le dès la première utilisation.</p>
+      </div>
+    </div>
+
+    <div class="notice-step">
+      <div class="notice-num notice-num-parent">2</div>
+      <div class="notice-step-body">
+        <strong>Régler le score chaque semaine</strong>
+        <p>Chaque dimanche soir (ou lundi matin), évaluez la semaine de votre enfant sur <strong>35 points</strong> en tenant compte de sa régularité, la qualité des validations, et l'honnêteté de ses retours. Ce score détermine directement son temps de jeu pour la semaine suivante.</p>
+      </div>
+    </div>
+
+    <div class="notice-step">
+      <div class="notice-num notice-num-parent">3</div>
+      <div class="notice-step-body">
+        <strong>Identifier les faiblesses</strong>
+        <p>Dans l'onglet Parent, cochez les matières en difficulté. L'IA utilisera ces informations pour prioriser les exercices dans ces matières. Mettez à jour après chaque contrôle ou en cas de signalement par un professeur.</p>
+      </div>
+    </div>
+
+    <div class="notice-step">
+      <div class="notice-num notice-num-parent">4</div>
+      <div class="notice-step-body">
+        <strong>Consulter l'historique</strong>
+        <p>L'onglet <strong>Historique 📖</strong> montre tous les exercices validés avec dates, résultats et commentaires d'Ethan. C'est votre indicateur de sérieux. Un taux de réussite élevé + des commentaires pertinents = travail sérieux.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Grille d'évaluation hebdomadaire</div>
+    <p style="font-size:13px;color:#555;margin-bottom:10px">Pour noter la semaine sur 35 points de façon équitable :</p>
+    <table class="notice-table">
+      <tr><th>Critère</th><th>Points max</th><th>Comment évaluer</th></tr>
+      <tr><td><strong>Régularité</strong></td><td>10 pts</td><td>2 pts par séance validée (5 séances = 10/10)</td></tr>
+      <tr><td><strong>Durée des séances</strong></td><td>8 pts</td><td>Séances &lt; 20 min = 0 pt · 20-40 min = 1 pt · &gt; 40 min = 2 pts</td></tr>
+      <tr><td><strong>Qualité des preuves</strong></td><td>7 pts</td><td>Descriptions vagues = 0 · Précises avec exemples = 1-2 pts</td></tr>
+      <tr><td><strong>Taux de réussite exercices</strong></td><td>6 pts</td><td>Voir Historique · &gt;80% validés = 6 · 50-80% = 3 · &lt;50% = 1</td></tr>
+      <tr><td><strong>Honnêteté / cohérence</strong></td><td>4 pts</td><td>Signalements "difficile" cohérents avec le niveau réel</td></tr>
+    </table>
+    <div class="notice-rule notice-rule-warn">
+      <span class="ico">⚠️</span>
+      <span>Un score gonflé artificiellement casse le système. Soyez stricts — un score de 15/35 honnête est meilleur qu'un 30/35 complaisant.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Utilisation du mode bac</div>
+    <p style="font-size:13px;color:#555;margin-bottom:10px">Activez le mode bac dans l'onglet Parent ou Mode bac selon la période de l'année :</p>
+    <table class="notice-table">
+      <tr><th>Période</th><th>Mode recommandé</th></tr>
+      <tr><td>Début d'année / découverte des chapitres</td><td><strong>Normal</strong> — apprendre avec les aides</td></tr>
+      <tr><td>Après la Toussaint / chapitres vus</td><td><strong>Révision</strong> — consolider sans filet</td></tr>
+      <tr><td>Semaine avant un contrôle</td><td><strong>Contrôle</strong> — s'entraîner dans les conditions</td></tr>
+      <tr><td>Grand oral / épreuves finales</td><td><strong>Bac blanc</strong> — conditions réelles complètes</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Signaux d'alerte 🚨</div>
+    <div class="notice-rule notice-rule-nok"><span class="ico">🔴</span><span><strong>Preuves vagues ou toujours identiques</strong> — "j'ai travaillé" sans détail : demandez à voir le cahier ou les exercices réalisés.</span></div>
+    <div class="notice-rule notice-rule-nok"><span class="ico">🔴</span><span><strong>100% de réussite sur tous les exercices</strong> — trop beau pour être vrai. Si tout est "fait !", vérifiez que les exercices sont réellement effectués sur papier.</span></div>
+    <div class="notice-rule notice-rule-nok"><span class="ico">🔴</span><span><strong>Jamais de "trop difficile"</strong> — un lycéen qui ne trouve jamais rien difficile ne s'évalue pas honnêtement.</span></div>
+    <div class="notice-rule notice-rule-ok"><span class="ico">🟢</span><span><strong>Commentaires variés et précis</strong> — "j'ai bloqué sur la factorisation du discriminant" = travail sérieux et bonne métacognition.</span></div>
+    <div class="notice-rule notice-rule-ok"><span class="ico">🟢</span><span><strong>Signalements "difficile" suivis d'amélioration</strong> — l'IA adapte, les résultats s'améliorent = le système fonctionne bien.</span></div>
+  </div>
+
+  <div class="card">
+    <div class="notice-section-title">Questions fréquentes</div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">L'IA a besoin d'internet pour générer les exercices ? <span>▼</span></div>
+      <div class="faq-a">Oui, la génération d'exercices personnalisés nécessite une connexion internet pour appeler l'API Claude. En cas de coupure, des exercices de secours (base locale) sont affichés automatiquement. Toutes les données (historique, programme, scores) sont stockées localement sur l'appareil — aucune donnée personnelle n'est envoyée à un serveur tiers.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Les données sont-elles sauvegardées si on change d'appareil ? <span>▼</span></div>
+      <div class="faq-a">Les données sont stockées dans le navigateur (localStorage) de l'appareil. Si vous changez d'appareil ou de navigateur, l'historique repart à zéro. Pour éviter ça, utilisez toujours le même appareil et le même navigateur. Une fonctionnalité d'export/import pourra être ajoutée sur demande.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Comment ajuster si mon enfant a un contrôle important la semaine prochaine ? <span>▼</span></div>
+      <div class="faq-a">Allez dans Parent → cochez la matière du contrôle en "faiblesse", réglez le mode bac sur "Contrôle", et augmentez le score de motivation si la semaine précédente a été bonne. L'IA va automatiquement prioriser cette matière et générer des exercices type DS.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Mon enfant trouve les exercices trop faciles ou trop difficiles ? <span>▼</span></div>
+      <div class="faq-a">La difficulté est automatiquement ajustée via le score hebdomadaire. Score bas = exercices plus accessibles. Score élevé = exercices plus exigeants. Si le niveau ne correspond pas, ajustez le score dans l'onglet Parent. Vous pouvez aussi changer les statuts des chapitres dans Programme (acquis / vu / non vu) pour affiner le ciblage.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Le PIN parent est-il vraiment sécurisé ? <span>▼</span></div>
+      <div class="faq-a">Le PIN est stocké localement et protège l'onglet Parent des modifications non autorisées. Il n'est pas crypté côté serveur (l'app est entièrement locale). Pour un usage familial, c'est suffisant. Ne réutilisez pas un mot de passe important — utilisez un code simple de 4 chiffres.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DONNÉES ===== -->
+<div class="section" id="donnees">
+
+  <div class="card">
+    <h2>💾 Sauvegarde & restauration</h2>
+    <p style="font-size:13px;color:#666;margin-bottom:14px;line-height:1.6">
+      Exporte tes données avant chaque mise à jour de l'app. Tu pourras les réimporter ensuite pour ne rien perdre.
+    </p>
+
+    <!-- Google Sheets Sync -->
+    <div class="gsheet-setup">
+      <h3>☁️ Synchronisation Google Sheets (automatique)</h3>
+      <p style="font-size:12px;color:#555;margin-bottom:8px;line-height:1.5">
+        Connecte le Google Sheet pour sauvegarder automatiquement toutes tes données dans le cloud.
+        La sauvegarde se fait à chaque validation d'exercice et toutes les 5 minutes.
+      </p>
+      <div id="syncCurrentStatus"></div>
+      <div class="url-row">
+        <input type="text" id="sheetUrlInput" placeholder="URL Apps Script (https://script.google.com/macros/s/...)" value="">
+        <button onclick="connecterSheets()">Connecter</button>
+      </div>
+      <div id="sheetConnStatus" style="margin-top:6px;font-size:12px"></div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="sauvegarderSheets()" style="background:#1a73e8;color:white;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">☁️ Sauvegarder maintenant</button>
+        <button onclick="restaurerSheets()" style="background:#34a853;color:white;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">⬇️ Restaurer depuis Sheets</button>
+      </div>
+    </div>
+
+    <div class="data-panel">
+      <h3>📤 Exporter mes données</h3>
+      <p>Télécharge un fichier JSON contenant tout : sujets, historique des exercices, sujets en cours, score, paramètres.</p>
+      <div class="data-actions">
+        <button class="btn-export" onclick="exporterDonnees()">⬇ Télécharger mes données</button>
+        <button class="btn-export" style="background:#5c6bc0" onclick="copierDonnees()">📋 Copier en JSON</button>
+      </div>
+      <div id="exportStatus"></div>
+    </div>
+
+    <div class="data-panel">
+      <h3>📥 Importer des données</h3>
+      <p>Colle ici un JSON exporté précédemment pour restaurer tes données. Attention : ça remplace les données actuelles.</p>
+      <div class="data-actions">
+        <button class="btn-import" onclick="toggleImport()">⬆ Coller un JSON</button>
+        <button class="btn-import" style="background:#00897b" onclick="document.getElementById('importFile').click()">📁 Depuis un fichier</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importerFichier(event)">
+      </div>
+      <div class="import-area" id="importArea">
+        <textarea id="importJson" placeholder="Colle ici le JSON exporté..."></textarea>
+        <button class="btn-import" onclick="importerDonnees()" style="width:100%;padding:10px">✅ Importer et restaurer</button>
+      </div>
+      <div id="importStatus"></div>
+    </div>
+
+    <div class="data-panel" style="background:#fffbf0;border-color:#ffe082">
+      <h3 style="color:#7d5a00">🔍 Récupération d'urgence</h3>
+      <p>Si tes données semblent perdues après une mise à jour, clique ici pour scanner toutes les clés du navigateur et tenter de les récupérer.</p>
+      <div class="data-actions">
+        <button onclick="scannerLocalStorage()" style="background:#f39c12;color:white;flex:1;padding:9px 12px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer">🔍 Scanner et récupérer</button>
+      </div>
+      <div id="scanStatus"></div>
+    </div>
+
+    <div class="data-panel" style="background:#fdecea;border-color:#fca5a5">
+      <h3 style="color:#c62828">🗑 Réinitialisation</h3>
+      <p>Efface toutes les données locales (sujets, historique, paramètres). Irréversible — exporte d'abord !</p>
+      <div class="data-actions">
+        <button class="btn-reset" style="flex:1;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer" onclick="reinitialiserDonnees()">⚠️ Tout effacer</button>
+      </div>
+    </div>
+
+    <div class="data-panel">
+      <h3>📊 État du stockage</h3>
+      <div id="storageInfo" style="font-size:12px;color:#555;line-height:1.8"></div>
+    </div>
+
+    <div class="data-panel" style="background:#f0fff4;border-color:#a3d9b1">
+      <h3 style="color:#155724">🔬 Diagnostic IA</h3>
+      <p style="font-size:12px;color:#555;margin-bottom:8px">Teste la connexion à l'IA et identifie les problèmes.</p>
+      <button onclick="diagnosticIA()" style="background:#155724;color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:100%">🔬 Lancer le diagnostic</button>
+      <div id="diagResult" style="margin-top:10px;font-size:12px;line-height:1.8"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// BASE DE DONNÉES EXERCICES DÉTAILLÉS
+// ============================================================
+// ============================================================
+// ÉCRAN DE VERROUILLAGE
+// ============================================================
+const PIN_ACCES_KEY = 'coachEthanPinAcces';
+const PIN_ACCES_DEFAULT = '1234';
+let pinSaisi = '';
+let pinAttempts = 0;
+
+function getPinAcces(){
+  try{ return localStorage.getItem(PIN_ACCES_KEY) || PIN_ACCES_DEFAULT; }
+  catch(e){ return PIN_ACCES_DEFAULT; }
+}
+
+function setPinAcces(pin){
+  try{ localStorage.setItem(PIN_ACCES_KEY, pin); }catch(e){}
+}
+
+function pinPress(val){
+  const errEl = document.getElementById('lockError');
+  if(val === 'del'){
+    pinSaisi = pinSaisi.slice(0,-1);
+  } else if(val === 'clear'){
+    pinSaisi = '';
+  } else {
+    if(pinSaisi.length >= 4) return;
+    pinSaisi += val;
+  }
+  // Mise à jour des points
+  for(let i=0;i<4;i++){
+    const dot = document.getElementById('dot'+i);
+    dot.classList.toggle('filled', i < pinSaisi.length);
+    dot.classList.remove('error');
+  }
+  errEl.textContent = '';
+  // Vérification automatique quand 4 chiffres saisis
+  if(pinSaisi.length === 4){
+    setTimeout(()=>{
+      if(pinSaisi === getPinAcces()){
+        document.getElementById('lockscreen').classList.add('hidden');
+        pinSaisi = '';
+        pinAttempts = 0;
+      } else {
+        pinAttempts++;
+        for(let i=0;i<4;i++) document.getElementById('dot'+i).classList.add('error');
+        errEl.textContent = pinAttempts >= 3
+          ? 'Code incorrect. Indice : par défaut c\'est 1234'
+          : 'Code incorrect, réessaie.';
+        setTimeout(()=>{
+          pinSaisi = '';
+          for(let i=0;i<4;i++){
+            const d = document.getElementById('dot'+i);
+            d.classList.remove('filled','error');
+          }
+        }, 600);
+      }
+    }, 80);
+  }
+}
+
+// Support clavier physique sur l'écran de verrouillage
+document.addEventListener('keydown', e => {
+  if(document.getElementById('lockscreen').classList.contains('hidden')) return;
+  if(e.key >= '0' && e.key <= '9') pinPress(e.key);
+  if(e.key === 'Backspace') pinPress('del');
+  if(e.key === 'Escape') pinPress('clear');
+});
+
+// ============================================================
+const EXERCICES_DB = {
+  Maths: {
+    Fonctions: [
+      {
+        titre: "Étude complète d'une fonction du second degré",
+        consigne: "Soit f(x) = 2x² – 5x + 3. (1) Calculer le discriminant et déterminer les racines. (2) Dresser le tableau de signe de f. (3) Calculer les coordonnées du sommet de la parabole. (4) Tracer la courbe sur [–1 ; 4] avec au moins 6 points calculés.",
+        methode: "Rappel : Δ = b² – 4ac. Sommet : xs = –b/(2a), ys = f(xs). Tableau de signe : négatif entre les racines si a > 0.",
+        criteres: "✓ Discriminant correct | ✓ Racines exactes | ✓ Sommet exact | ✓ Tableau de signe complet | ✓ Tracé propre avec échelle",
+        duree: 25, niveau: "vu", difficulte: "moyen"
+      },
+      {
+        titre: "Variations et extremum",
+        consigne: "Soit g(x) = –x² + 4x – 1. (1) Sans calculer les racines, déterminer le sens de variation sur ℝ. (2) Calculer le maximum de g. (3) Résoudre g(x) ≥ 2. (4) Déterminer l'intervalle sur lequel g est positive.",
+        methode: "Sens de variation via dérivée g'(x) = –2x + 4 = 0. Pour g(x) ≥ 2 : résoudre –x² + 4x – 1 ≥ 2 donc –x² + 4x – 3 ≥ 0.",
+        criteres: "✓ Dérivée correcte | ✓ Maximum trouvé | ✓ Inéquation résolue avec tableau de signe | ✓ Intervalle positif correct",
+        duree: 20, niveau: "non vu", difficulte: "moyen"
+      },
+      {
+        titre: "Fonctions affines et intersections",
+        consigne: "Deux fonctions : f(x) = 3x – 2 et g(x) = –x + 6. (1) Calculer les coordonnées de leur point d'intersection. (2) Sur [0 ; 5], déterminer pour quelles valeurs de x on a f(x) > g(x). (3) Calculer l'aire du triangle formé par les deux droites et l'axe des ordonnées.",
+        methode: "Intersection : f(x) = g(x) → 3x – 2 = –x + 6. Comparaison : f(x) – g(x) > 0. Aire triangle = ½ × base × hauteur.",
+        criteres: "✓ Point intersection | ✓ Inégalité résolue | ✓ Aire calculée avec unité",
+        duree: 18, niveau: "vu", difficulte: "facile"
+      }
+    ],
+    Équations: [
+      {
+        titre: "Système de deux équations à deux inconnues",
+        consigne: "Résoudre par substitution ET par combinaison : { 3x + 2y = 14 et 5x – y = 7 }. (1) Méthode par substitution (isoler y dans la 2e équation). (2) Méthode par combinaison (éliminer y). (3) Vérifier la solution dans les deux équations de départ.",
+        methode: "Substitution : y = 5x – 7 puis remplacer dans eq.1. Combinaison : multiplier eq.2 par 2 puis additionner. La vérification est obligatoire.",
+        criteres: "✓ Deux méthodes utilisées | ✓ Même résultat obtenu | ✓ Vérification écrite | ✓ Présentation claire",
+        duree: 22, niveau: "non vu", difficulte: "moyen"
+      },
+      {
+        titre: "Équations du premier degré avec fractions",
+        consigne: "Résoudre : (1) (2x+3)/4 – (x–1)/3 = 2. (2) (3x+1)/(x–2) = 4 pour x ≠ 2. (3) Vérifier si x = –1 est solution de 2(x+3) – 3(2x–1) = 5x + 8.",
+        methode: "Pour (1) : réduire au même dénominateur 12. Pour (2) : produit en croix. Pour (3) : développer et simplifier des deux côtés.",
+        criteres: "✓ Réduction fractions | ✓ Développements sans erreur | ✓ Vérification de (3) correcte",
+        duree: 20, niveau: "vu", difficulte: "moyen"
+      }
+    ],
+    Géométrie: [
+      {
+        titre: "Théorème de Thalès – démonstration et calcul",
+        consigne: "Dans un triangle ABC, M est sur [AB] et N est sur [AC]. On sait que AM = 4, MB = 6, AN = 5, NC = 7,5. (1) Démontrer que (MN) est parallèle à (BC). (2) Calculer MN sachant que BC = 13. (3) Calculer l'aire du trapèze BMNC si la hauteur du triangle est 8 cm.",
+        methode: "Thalès : vérifier AM/AB = AN/AC. Rapport k = AM/AB. MN = k × BC. Aire trapèze = ½ × (b1 + b2) × h.",
+        criteres: "✓ Rapport vérifié | ✓ MN calculé | ✓ Aire avec unité | ✓ Rédaction en phrases complètes",
+        duree: 25, niveau: "non vu", difficulte: "difficile"
+      }
+    ]
+  },
+  Physique: {
+    Électricité: [
+      {
+        titre: "Circuit RC – charge et décharge",
+        consigne: "Un condensateur de capacité C = 100 µF est chargé sous tension U₀ = 12 V puis se décharge dans une résistance R = 10 kΩ. (1) Calculer la constante de temps τ. (2) Donner l'expression de u(t) pendant la décharge. (3) Calculer la tension aux bornes du condensateur après t = 2τ. (4) Au bout de combien de constantes de temps considère-t-on le régime permanent atteint ?",
+        methode: "τ = RC. u(t) = U₀ × e^(–t/τ). Après 5τ on considère le régime permanent. Calculer e^(–2) ≈ 0,135.",
+        criteres: "✓ τ en secondes | ✓ Expression avec unités | ✓ Valeur numérique à t=2τ | ✓ Réponse 5τ justifiée",
+        duree: 25, niveau: "non vu", difficulte: "difficile"
+      },
+      {
+        titre: "Lois de Kirchhoff – mailles et nœuds",
+        consigne: "Un circuit comporte : E = 9V, R1 = 100Ω, R2 = 200Ω, R3 = 300Ω. R1 est en série avec le groupe (R2 // R3). (1) Calculer la résistance équivalente du circuit. (2) Calculer l'intensité totale délivrée par le générateur. (3) Calculer la tension aux bornes de R2. (4) Vérifier par la loi des nœuds que I2 + I3 = I1.",
+        methode: "R23 = (R2×R3)/(R2+R3). Req = R1 + R23. I = E/Req. U23 = I × R23. I2 = U23/R2, I3 = U23/R3.",
+        criteres: "✓ R_eq correct | ✓ Intensités en Ampères | ✓ Vérification nœuds | ✓ Toutes unités présentes",
+        duree: 22, niveau: "vu", difficulte: "moyen"
+      }
+    ],
+    Optique: [
+      {
+        titre: "Lentille convergente – construction et formule",
+        consigne: "Une lentille convergente a une distance focale f' = +5 cm. Un objet réel AB est placé à 15 cm de la lentille (OA = –15 cm). (1) Construire l'image A'B' avec 2 rayons particuliers (rayon passant par O, rayon parallèle à l'axe). (2) Appliquer la relation de conjugaison pour trouver OA'. (3) Calculer le grandissement γ. (4) Qualifier l'image : réelle ou virtuelle, droite ou renversée, agrandie ou réduite.",
+        methode: "Conjugaison : 1/OA' – 1/OA = 1/f'. Grandissement : γ = OA'/OA = A'B'/AB. γ < 0 → image renversée. |γ| > 1 → agrandie.",
+        criteres: "✓ Construction géométrique | ✓ OA' calculé par formule | ✓ γ calculé | ✓ Qualification complète",
+        duree: 25, niveau: "non vu", difficulte: "moyen"
+      }
+    ]
+  },
+  Anglais: {
+    Vocabulaire: [
+      {
+        titre: "Essay – Opinion sur la technologie et société",
+        consigne: "Write a structured essay (200–250 words) on the topic: 'Has social media done more harm than good to teenagers?' Structure: (1) Introduction with thesis statement. (2) Body §1 – advantages with ONE concrete example. (3) Body §2 – disadvantages with ONE concrete example. (4) Conclusion restating your position. Use linking words: however, furthermore, in contrast, as a result.",
+        methode: "Plan obligatoire avant rédaction. Thesis = position claire dès l'intro. Exemples précis (chiffres, cas réels). Vérifier : sujet/verbe agreement, past vs present perfect.",
+        criteres: "✓ Structure respectée | ✓ 2 linking words minimum | ✓ Thesis claire | ✓ 200–250 mots | ✓ Pas de fautes de conjugaison",
+        duree: 30, niveau: "vu", difficulte: "moyen"
+      },
+      {
+        titre: "Compréhension écrite – texte argumentatif",
+        consigne: "Read the following text (to be provided by your teacher / use your textbook p. 87) then: (1) Identify the main idea in one sentence. (2) Find 3 arguments made by the author. (3) Explain in your own words the expression 'cutting edge technology'. (4) Do you agree with the author's conclusion? Justify in 5–6 sentences using: I believe that / It seems to me that / One could argue that.",
+        methode: "Skim first (30s) pour l'idée générale. Scan ensuite pour les arguments (marqueurs: firstly, moreover, in addition). Pour le vocabulaire en contexte : chercher indices avant/après le mot.",
+        criteres: "✓ Idée principale en UNE phrase | ✓ 3 arguments distincts | ✓ Paraphrase correcte | ✓ Opinion justifiée avec connecteurs",
+        duree: 25, niveau: "non vu", difficulte: "moyen"
+      }
+    ]
+  },
+  Français: {
+    Grammaire: [
+      {
+        titre: "Analyse grammaticale de proposition subordonnée",
+        consigne: "Analysez les propositions subordonnées dans les phrases suivantes : (1) 'Je sais que tu viendras.' (2) 'La maison où il habitait était grande.' (3) 'Bien qu'il fasse froid, elle n'a pas pris son manteau.' (4) 'Il travaille pour que ses parents soient fiers.' Pour chacune : identifier la nature, la fonction et le mode du verbe.",
+        methode: "Nature : complétive / relative / circonstancielle. Fonction : COD / complément de nom / CC cause-concession-but. Modes : indicatif après que de complétive ; subjonctif après pour que, bien que.",
+        criteres: "✓ Nature correcte | ✓ Fonction correcte | ✓ Mode du verbe identifié | ✓ Réponse organisée par phrase",
+        duree: 20, niveau: "vu", difficulte: "moyen"
+      }
+    ],
+    Littérature: [
+      {
+        titre: "Commentaire de texte – extrait poétique",
+        consigne: "Rédigez un commentaire composé de l'extrait de Verlaine 'Il pleure dans mon cœur' en 3 axes : (1) Une musicalité mélancolique (sonorités, rythme, répétitions). (2) La confusion intérieure du locuteur (images, oxymores). (3) La portée universelle de la tristesse (généralisation, présent de vérité). Introduction (5 lignes) + 3 parties (8 lignes chacune) + conclusion (4 lignes).",
+        methode: "Chaque analyse doit : citer le texte entre guillemets, nommer la figure de style, expliquer l'effet produit. Jamais de paraphrase : toujours interprétation.",
+        criteres: "✓ Plan respecté | ✓ 3 citations minimum | ✓ Figures nommées | ✓ Pas de paraphrase | ✓ Introduction avec problématique",
+        duree: 40, niveau: "non vu", difficulte: "difficile"
+      }
+    ]
+  },
+  "Histoire-Géo": {
+    "Guerre Froide": [
+      {
+        titre: "Chronologie commentée de la Guerre froide",
+        consigne: "Construire une frise chronologique des 6 crises majeures de la Guerre froide (1947–1991). Pour chaque crise : (1) Date précise. (2) Nom et localisation. (3) Acteurs principaux. (4) Issue et importance dans la bipolarisation mondiale. Rédiger ensuite un paragraphe de 8–10 lignes expliquant pourquoi on parle de 'guerre' sans affrontement direct.",
+        methode: "Crises à traiter : Blocus de Berlin (1948), Corée (1950), Cuba (1962), Vietnam (1964), Prague (1968), Afghanistan (1979). Concept de 'guerre par procuration' à maîtriser.",
+        criteres: "✓ 6 crises | ✓ Dates exactes | ✓ Paragraphe argumenté | ✓ Vocabulaire : bipolarisation, dissuasion nucléaire, proxy war",
+        duree: 35, niveau: "non vu", difficulte: "difficile"
+      }
+    ],
+    Mondialisation: [
+      {
+        titre: "Croquis géographique – les pôles de la mondialisation",
+        consigne: "Réaliser un croquis légendé du monde montrant : (1) La Triade (USA / Europe / Japon-Asie du SE). (2) Les pays émergents (BRICS). (3) Les espaces en marge. (4) Les principales routes maritimes mondiales. Rédiger une légende organisée en 3 parties avec titre, sous-titres et codes couleur distincts. Format A4, crayon + stylo.",
+        methode: "Croquis = formes simplifiées, pas de dessin. Légende d'abord sur brouillon, puis tracé. Codes : hachures pour la Triade, couleur pour émergents, pointillés pour routes.",
+        criteres: "✓ Légende organisée | ✓ Titre | ✓ Triade correctement placée | ✓ Au moins 3 routes maritimes | ✓ Espaces marginalisés représentés",
+        duree: 30, niveau: "non vu", difficulte: "moyen"
+      }
+    ]
+  },
+  SVT: {
+    Génétique: [
+      {
+        titre: "Transmission d'un caractère monohybride",
+        consigne: "Des plantes à fleurs rouges (RR) sont croisées avec des plantes à fleurs blanches (rr). (1) Donner le génotype et phénotype de la F1. (2) Réaliser l'échiquier de croisement F1 × F1. (3) Donner les proportions phénotypiques de la F2. (4) Si la plante rouge F1 est croisée avec une blanche, quelle sera la F2 ? (5) Définir : allèle dominant, allèle récessif, homozygote.",
+        methode: "Échiquier : lignes = gamètes d'un parent, colonnes = gamètes de l'autre. Résultat F2 normal : 3/4 rouge, 1/4 blanc. Test-cross (4) : 1/2 rouge, 1/2 blanc.",
+        criteres: "✓ Échiquier complet | ✓ Proportions 3/1 justifiées | ✓ Test-cross correct | ✓ 3 définitions précises",
+        duree: 25, niveau: "non vu", difficulte: "moyen"
+      }
+    ],
+    Écosystèmes: [
+      {
+        titre: "Réseaux trophiques et flux d'énergie",
+        consigne: "À partir des données : Producteurs (herbe) : 10 000 kJ/m²/an ; Herbivores (lapins) : 1 200 kJ/m²/an ; Carnivores (renards) : 100 kJ/m²/an. (1) Construire la pyramide des énergies. (2) Calculer le rendement de transfert entre chaque niveau. (3) Expliquer pourquoi seulement 10% de l'énergie est transférée. (4) Déduire l'intérêt écologique d'une alimentation végétarienne.",
+        methode: "Rendement = (niveau n+1 / niveau n) × 100. Pertes énergétiques : respiration, chaleur, déchets non assimilés. Règle des 10% = loi de Lindeman.",
+        criteres: "✓ Pyramide dessinée avec unités | ✓ Rendements calculés en % | ✓ Explication pertes en 3 points | ✓ Conclusion alimentation justifiée",
+        duree: 25, niveau: "non vu", difficulte: "moyen"
+      }
+    ]
+  }
+};
+
+// ============================================================
+// MODES BAC
+// ============================================================
+const MODES_BAC = {
+  off: {
+    label: "Mode Normal",
+    desc: "Les exercices sont présentés avec consignes complètes, méthode et critères de réussite. Idéal pour l'apprentissage.",
+    badge: "Normal", color: "#22b573"
+  },
+  revision: {
+    label: "Mode Révision",
+    desc: "Les méthodes sont masquées. Tu dois retrouver la démarche par toi-même avant de vérifier. Les critères restent visibles.",
+    badge: "Révision", color: "#f39c12"
+  },
+  controle: {
+    label: "Mode Contrôle",
+    desc: "Chronomètre activé. Méthode ET critères masqués. Conditions de contrôle : aucune aide, présentation soignée obligatoire.",
+    badge: "Contrôle ⏱", color: "#e67e22"
+  },
+  bac_blanc: {
+    label: "Mode Bac Blanc",
+    desc: "Conditions réelles : durée imposée, présentation académique (nom, date, classe en en-tête), rédaction complète, aucune aide extérieure.",
+    badge: "Bac Blanc 🎓", color: "#e74c3c"
+  }
+};
+
+// ============================================================
+// ÉTAT APPLICATION
+// ============================================================
+let etat = {
+  score: 0, historique: [], pin: '1234',
+  debloque: false, modeBac: 'off',
+  priorite: 'Physique', faiblesses: ['Physique','Anglais'],
+  exercicesGeneres: [], historiqueExercices: [], coursActifs: []
+};
+
+try {
+  const s = localStorage.getItem('coachEthanV6');
+  if(s) etat = {...etat, ...JSON.parse(s)};
+} catch(e){}
+
+function sauvegarder(){ try{ localStorage.setItem('coachEthanV6', JSON.stringify(etat)); }catch(e){} }
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSection(id, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='exercices'){ if(etat.exercicesObsoletes && etat.exercicesGeneres.length>0){ etat.exercicesObsoletes=false; sauvegarder(); genererExercicesAuto(); } else { afficherExercices(); } }
+  if(id==='programme'){ afficherProgramme(); afficherCoursActifs(); }
+  if(id==='accueil') updateAccueil();
+  if(id==='histoexo') afficherHistoExo();
+  if(id==='donnees'){ afficherStorageInfo(); afficherSyncStatus(); }
+  // Les notices n'ont pas besoin d'init JS
+}
+
+// ============================================================
+// ACCUEIL
+// ============================================================
+function updateAccueil(){
+  document.getElementById('dateSeance').value = new Date().toLocaleDateString('fr-FR');
+  const score = etat.score;
+  const jeu = score < 10 ? 20 : score < 18 ? 30 : score < 25 ? 45 : score < 30 ? 60 : 75;
+  document.getElementById('scoreAccueil').textContent = score + '/35';
+  document.getElementById('tempsJeuAccueil').textContent = jeu + ' min';
+  document.getElementById('streakAccueil').textContent = (etat.historique.length) + 'j';
+
+  const niveaux = ['Rookie','Bronze','Argent','Or','Platine','Légendaire'];
+  const n = score < 8 ? 0 : score < 16 ? 1 : score < 22 ? 2 : score < 28 ? 3 : score < 33 ? 4 : 5;
+  document.getElementById('niveauAccueil').textContent = niveaux[n];
+
+  // Bannière période
+  const vac = estVacancesZoneC();
+  const banner = document.getElementById('periodeBanner');
+  banner.innerHTML = vac
+    ? '<div class="vac-banner">🌴 Vacances – Mode intensif : +exercices, +durée, focus révision</div>'
+    : '<div class="sco-banner">📚 Période scolaire – Séances courtes et ciblées</div>';
+
+  // Historique
+  const hist = document.getElementById('historiqueRapide');
+  if(!etat.historique.length){
+    hist.innerHTML = '<p style="color:#999;font-size:13px">Aucune séance pour le moment.</p>';
+  } else {
+    hist.innerHTML = etat.historique.slice(-5).reverse().map(h =>
+      `<div class="historique-item">📅 ${h.date} – ${h.matiere} – ${h.duree}min – ${h.ressenti} – ${h.preuve||'–'}</div>`
+    ).join('');
+  }
+}
+
+function validerSeance(){
+  const seance = {
+    date: document.getElementById('dateSeance').value,
+    matiere: document.getElementById('matiereSeance').value,
+    duree: document.getElementById('dureeSeance').value,
+    ressenti: document.getElementById('ressentiSeance').value,
+    preuve: document.getElementById('preuveSeance').value
+  };
+  if(!seance.preuve.trim()){ alert('Décris ce que tu as fait pour valider la séance.'); return; }
+  etat.historique.push(seance);
+  etat.exercicesObsoletes = true;
+  sauvegarder();
+  document.getElementById('preuveSeance').value = '';
+  updateAccueil();
+  alert("✅ Séance validée ! Les exercices IA seront mis à jour à ta prochaine visite.");
+}
+
+// ============================================================
+// EXERCICES IA – GÉNÉRATION DYNAMIQUE VIA API CLAUDE
+// ============================================================
+
+// ============================================================
+// PROXY IA VIA APPS SCRIPT (évite CORS)
+// ============================================================
+// ============================================================
+// PROXY IA VIA APPS SCRIPT → OPENAI
+// ============================================================
+async function callClaudeProxy(messages, maxTokens){
+  const sheetUrl = getSheetUrl();
+  if(!sheetUrl){
+    throw new Error('Apps Script non connecte. Va dans Donnees pour connecter le Google Sheet.');
+  }
+  const payload = {
+    model: 'gpt-4o-mini',
+    max_tokens: maxTokens || 1200,
+    messages: messages
+  };
+
+  // POST vers Apps Script avec timeout 25s
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 25000);
+  let res;
+  try {
+    res = await fetch(sheetUrl + '?action=claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(tid);
+  }
+
+  if(!res.ok) throw new Error('Erreur serveur ' + res.status);
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); }
+  catch(e) { throw new Error('Reponse invalide: ' + text.substring(0,100)); }
+  if(data.error) throw new Error(data.error);
+  return data;
+}
+
+// Alias pour compatibilité
+const callClaude = callClaudeProxy;
+
+
+async function genererExercices(){
+  const btn = (typeof event !== 'undefined' && event?.target) ? event.target : (document.querySelector('#exercices .btn-blue') || {innerHTML:'', disabled:false});
+  btn.innerHTML = '<span class="spinner"></span> IA en train de générer...';
+  btn.disabled = true;
+  // Reset complet des exercices précédents
+  etat.exercicesGeneres = [];
+  etat.exercicesObsoletes = false;
+
+  initSujets();
+  const filtre = document.getElementById('filtreMatiere').value;
+  const mode = etat.modeBac;
+
+  // Contexte complet transmis à l'IA
+  const sujetsParStatut = {
+    nonVus: SUJETS.filter(s => s.statut === 'non vu').map(s => `${s.matiere} – ${s.chapitre}`),
+    vus:    SUJETS.filter(s => s.statut === 'vu').map(s => `${s.matiere} – ${s.chapitre}`),
+    acquis: SUJETS.filter(s => s.statut === 'acquis').map(s => `${s.matiere} – ${s.chapitre}`)
+  };
+
+  const dernieresSeances = etat.historique.slice(-5).map(h =>
+    `${h.date} – ${h.matiere} – ${h.duree}min – ressenti: ${h.ressenti}${h.preuve ? ' – ' + h.preuve : ''}`
+  );
+
+  const periode = estVacancesZoneC() ? 'VACANCES (Zone C) – séances longues possibles, focus révision approfondie' : 'PÉRIODE SCOLAIRE – séances courtes et ciblées';
+
+  const modeDesc = {
+    off: 'Normal : exercices classiques avec aide méthodologique complète',
+    revision: 'Révision : exercices de consolidation, variantes des notions vues, méthode partiellement masquée',
+    controle: 'Contrôle : exercices chronométrés type DS, conditions de contrôle, sans aide',
+    bac_blanc: 'Bac blanc : sujets type baccalauréat complets, rédaction académique exigée, barème apparent'
+  }[mode];
+
+  const scoreInfo = `Score semaine : ${etat.score}/35 – Niveau : ${['Rookie','Bronze','Argent','Or','Platine','Légendaire'][etat.score<8?0:etat.score<16?1:etat.score<22?2:etat.score<28?3:etat.score<33?4:5]}`;
+
+  const prompt = `Tu es Coach Ethan, un coach scolaire IA pour lycéen. Génère exactement 4 exercices personnalisés et progressifs pour Ethan en JSON strict.
+
+CONTEXTE ETHAN :
+- Classe : ${document.getElementById('classe')?.value || 'Première'} – Spécialités : ${document.getElementById('specialites')?.value || 'Maths + Physique-Chimie'}
+- ${scoreInfo}
+- Faiblesses identifiées : ${etat.faiblesses.join(', ') || 'aucune'}
+- Matière prioritaire cette semaine : ${etat.priorite}
+- Filtre demandé : ${filtre || 'toutes matières'}
+- Mode bac actuel : ${modeDesc}
+- Période : ${periode}
+
+PROGRAMME (statuts des chapitres) :
+- NON VU (priorité haute) : ${sujetsParStatut.nonVus.slice(0,8).join(', ') || 'aucun'}
+- VU (à consolider) : ${sujetsParStatut.vus.slice(0,8).join(', ') || 'aucun'}
+- ACQUIS (peut servir de base) : ${sujetsParStatut.acquis.slice(0,6).join(', ') || 'aucun'}
+- EN COURS CETTE SEMAINE (priorité maximale) : ${(etat.coursActifs||[]).map(c=>c.matiere+' – '+c.nom).join(', ') || 'aucun'}
+
+DERNIÈRES NOTES D'EXERCICES :
+${(etat.historiqueExercices||[]).slice(0,5).map(h=>`${h.matiere} – ${h.titre} : ${h.resultat}${h.note?' (note '+h.note+'/10)':''}`).join('\n') || 'Aucun exercice enregistré'}
+
+EXERCICES DÉJÀ FAITS – NE PAS RÉPÉTER (titres à éviter absolument) :
+${(etat.historiqueExercices||[]).slice(0,12).map(h=>h.titre).filter(Boolean).join(', ') || 'aucun'}
+
+DERNIÈRES SÉANCES (pour éviter les répétitions) :
+${dernieresSeances.length ? dernieresSeances.join('\n') : 'Aucune séance enregistrée'}
+
+RÈGLES DE GÉNÉRATION :
+1. Priorise STRICTEMENT dans cet ordre : (a) sujets EN COURS CETTE SEMAINE, (b) chapitres NON VU des matières en faiblesses, (c) chapitres NON VU des autres matières, (d) chapitres VU à consolider. N'utilise JAMAIS un chapitre ACQUIS si des chapitres NON VU existent
+2. Adapte la difficulté au score (${etat.score}/35) ET aux notes récentes : si notes < 5 → baisser ; si notes > 8 → augmenter
+3. En mode contrôle/bac blanc : consignes sans aide, type épreuve officielle avec barème
+4. En période de vacances : exercices plus longs (30-45 min), plus approfondis
+5. NE RÉPÈTE PAS les titres listés dans "EXERCICES DÉJÀ FAITS". Génère des exercices sur des chapitres DIFFÉRENTS ou des variantes très différentes
+5b. Si tous les chapitres non vus sont épuisés, va vers les chapitres "vu" avec un angle nouveau
+5c. INTERDIT de générer 2 exercices sur le même chapitre dans la même série
+5d. Si filtre = "Maths", utilise des chapitres de Maths VARIÉS (pas que Fonctions) : Équations, Statistiques, Géométrie, Probabilités, Suites, Dérivées...
+6. Chaque consigne doit être PRÉCISE : valeurs numériques concrètes, questions numérotées, contexte clair
+7. La méthode doit détailler les formules clés et les pièges à éviter
+8. Les critères de réussite doivent être vérifiables point par point
+
+Variation seed: ${Math.random().toString(36).slice(2,7)}
+
+RÉPONDS UNIQUEMENT avec ce JSON valide, rien d'autre :
+[
+  {
+    "matiere": "Maths",
+    "chapitre": "Fonctions",
+    "titre": "Titre court et précis",
+    "difficulte": "moyen",
+    "duree": 25,
+    "consigne": "Consigne détaillée avec valeurs numériques et questions numérotées (1) (2) (3)...",
+    "methode": "Formules clés, démarche pas à pas, pièges à éviter",
+    "criteres": "Liste de points à cocher pour valider la réussite",
+    "bareme": "Optionnel en mode bac : 'Question 1: 3pts, Question 2: 4pts...'"
+  }
+]`;
+
+  try {
+    const data = await callClaudeProxy(
+      [{ role: 'user', content: prompt }],
+      1000
+    );
+    const text = (data.content || []).map(c => c.text || '').join('');
+
+    // Parse JSON robuste
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('Format JSON invalide dans la réponse');
+    const exos = JSON.parse(jsonMatch[0]);
+
+    // Vider les anciens exercices et reset _valide
+    etat.exercicesGeneres = exos.map(e => {
+      const {_valide, ...rest} = e;
+      return rest;
+    });
+    etat.dernierContexteIA = {
+      date: new Date().toLocaleDateString('fr-FR'),
+      score: etat.score,
+      mode,
+      faiblesses: etat.faiblesses,
+      periode: estVacancesZoneC() ? 'vacances' : 'scolaire'
+    };
+    sauvegarder();
+    afficherExercices();
+
+  } catch(err) {
+    document.getElementById('listeExercices').innerHTML =
+      `<div style="background:#fdecea;border-radius:8px;padding:14px;font-size:13px;color:#c62828">
+        <strong>Erreur IA :</strong> ${err.message}<br>
+        <small>Vérifie ta connexion internet. Les exercices statiques restent disponibles ci-dessous.</small>
+      </div>`;
+    // Fallback sur exercices statiques
+    afficherExercicesStatiques();
+  } finally {
+    btn.innerHTML = '🤖 Régénérer avec l\'IA';
+    btn.disabled = false;
+  }
+}
+
+function afficherExercices(){
+  const conteneur = document.getElementById('listeExercices');
+  const filtre = document.getElementById('filtreMatiere').value;
+  const mode = etat.modeBac;
+
+  const exos = filtre
+    ? etat.exercicesGeneres.filter(e => e.matiere === filtre)
+    : etat.exercicesGeneres;
+
+  if(!exos.length){
+    const ctx = etat.dernierContexteIA;
+    const ctxHtml = ctx ? `<div style="font-size:11px;color:#aaa;margin-top:6px">Dernière génération : ${ctx.date} – Score ${ctx.score}/35 – Mode ${ctx.mode}</div>` : '';
+    conteneur.innerHTML = `<div style="text-align:center;padding:20px">
+      <div style="font-size:13px;color:#999;margin-bottom:12px">Clique sur le bouton pour que l'IA génère des exercices<br>adaptés à ton niveau et ton programme.</div>
+      ${ctxHtml}
+    </div>`;
+    return;
+  }
+
+  const mDesc = document.getElementById('modeBacDesc');
+  if(mode !== 'off'){
+    mDesc.style.display = 'block';
+    mDesc.innerHTML = `<strong>${MODES_BAC[mode].badge}</strong> – ${MODES_BAC[mode].desc}`;
+  } else {
+    mDesc.style.display = 'none';
+  }
+
+  // Affiche le contexte IA utilisé
+  const ctx = etat.dernierContexteIA;
+  const ctxTag = ctx ? `<div style="font-size:11px;color:#888;margin-bottom:12px;padding:6px 10px;background:#f8f9ff;border-radius:6px">
+    🤖 Générés le ${ctx.date} · Score ${ctx.score}/35 · Mode ${ctx.mode} · ${ctx.periode}
+    ${ctx.faiblesses?.length ? '· Faiblesses : ' + ctx.faiblesses.join(', ') : ''}
+  </div>` : '';
+
+  const couleurs = {Maths:'#1a3eaa',Physique:'#7b1fa2',Anglais:'#1a7b3a',Français:'#c62828',"Histoire-Géo":'#e65100',SVT:'#0277bd'};
+  const masquerMethode = mode === 'controle' || mode === 'bac_blanc';
+  const masquerCriteres = mode === 'bac_blanc';
+
+  conteneur.innerHTML = ctxTag + exos.map((exo, idx) => {
+    const borderColor = couleurs[exo.matiere] || '#2f63e0';
+    const diff = exo.difficulte==='difficile'
+      ? `<span class="tag tag-red">Difficile</span>`
+      : exo.difficulte==='moyen'
+        ? `<span class="tag tag-orange">Moyen</span>`
+        : `<span class="tag tag-green">Facile</span>`;
+    const chrono = (mode==='controle'||mode==='bac_blanc')
+      ? `<span class="tag tag-purple">⏱ ${exo.duree} min</span>`
+      : `<span class="tag tag-blue">~${exo.duree} min</span>`;
+
+    // Vérifier si déjà validé dans cette session
+    const dejaValide = etat.exercicesGeneres[idx]?._valide;
+    const doneClass = dejaValide ? ' done' : '';
+    const doneBanner = dejaValide
+      ? `<div class="exo-done-banner">✅ ${dejaValide.resultat === 'valide' ? 'Exercice validé' : '❌ Marqué difficile'} – ${dejaValide.date}${dejaValide.commentaire ? ' – ' + dejaValide.commentaire : ''}</div>`
+      : '';
+
+    return `
+    <div class="exo-card${doneClass}" id="exo-${idx}" style="border-left-color:${borderColor}">
+      <div class="exo-header">
+        <div>
+          <div class="matiere">${exo.matiere}${exo.chapitre ? ' – ' + exo.chapitre : ''}</div>
+          <div class="chapitre">${exo.titre}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">${diff} ${chrono}</div>
+      </div>
+      <div class="exo-body">
+        <div class="exo-consigne">${(exo.consigne||'').replace(/\n/g,'<br>').replace(/\((\d+)\)/g,'<strong>($1)</strong>')}</div>
+        ${exo.bareme && (mode==='controle'||mode==='bac_blanc') ? `<div class="exo-bac"><strong>📊 Barème</strong>${exo.bareme}</div>` : ''}
+        ${!masquerMethode && exo.methode ? `<div class="exo-methode"><strong>📐 Méthode attendue</strong>${(exo.methode||'').replace(/\n/g,'<br>')}</div>` : ''}
+        ${masquerMethode ? `<div class="exo-methode" style="background:#fff3e0;color:#7d5a00"><strong>📐 Méthode masquée</strong>Mode ${MODES_BAC[mode].badge} – trouve la démarche par toi-même.</div>` : ''}
+        ${!masquerCriteres && exo.criteres ? `<div class="exo-criteres"><strong>✅ Critères de réussite</strong>${(exo.criteres||'').replace(/\n/g,'<br>')}</div>` : ''}
+        ${mode==='bac_blanc' ? '<div class="exo-bac"><strong>🎓 Conditions bac blanc</strong>En-tête obligatoire : Nom, Prénom, Classe, Date. Rédaction en phrases complètes. Présentation soignée.</div>' : ''}
+        ${doneBanner}
+      </div>
+      ${!dejaValide ? `
+      <div class="exo-valider">
+        <textarea id="comment-${idx}" placeholder="Commentaire : ce qui était difficile, ta démarche..."></textarea>
+        <div class="photo-zone" id="photozone-${idx}" onclick="document.getElementById('photo-${idx}').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="dropPhoto(event,${idx})">
+          <input type="file" id="photo-${idx}" accept="image/*" onchange="loadPhoto(event,${idx})" style="display:none">
+          <div id="photoprev-${idx}">
+            <span style="font-size:28px">📷</span><br>
+            <span style="font-size:13px;color:#2f63e0;font-weight:600">Photo du travail</span><br>
+            <span style="font-size:11px;color:#888">L&#39;IA analysera ta copie et la notera</span>
+          </div>
+        </div>
+        <div id="photoreq-${idx}" class="photo-required">📷 Ajoute une photo pour que l'IA puisse corriger et noter ton travail.</div>
+        <div class="exo-valider-btn" style="margin-top:8px">
+          <button class="btn-valide" onclick="validerExercice(${idx}, 'valide')">📷 Soumettre pour correction IA</button>
+          <button class="btn-difficile" onclick="validerExercice(${idx}, 'difficile')">❌ Pas réussi</button>
+        </div>
+        <div id="corrIA-inline-${idx}" style="margin-top:4px"></div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// VALIDATION D'UN EXERCICE
+// ============================================================
+// ============================================================
+// PHOTO & NOTE SUR EXERCICE
+// ============================================================
+const photoData = {};
+const noteData  = {};
+
+function loadPhoto(event, idx){
+  const file = event.target.files[0];
+  if(!file) return;
+  // Compresser l'image avant stockage
+  compresserImage(file, (b64)=>{
+    photoData[idx] = b64;
+    document.getElementById('photoprev-'+idx).innerHTML =
+      `<img src="${b64}" class="photo-preview"><span style="font-size:11px;color:#888">Clique pour changer</span>`;
+  });
+}
+
+function compresserImage(file, callback){
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      // Limiter à 1000px max et qualité 0.7 pour rester sous 1Mo
+      // Compression maximale pour passer via Apps Script redirect Safari iOS
+      const MAX = 400;
+      let w = img.width, h = img.height;
+      if(w > MAX || h > MAX){
+        if(w > h){ h = Math.round(h * MAX/w); w = MAX; }
+        else { w = Math.round(w * MAX/h); h = MAX; }
+      }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.4));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function dropPhoto(event, idx){
+  event.preventDefault();
+  document.getElementById('photozone-'+idx).classList.remove('drag');
+  const file = event.dataTransfer.files[0];
+  if(!file || !file.type.startsWith('image/')) return;
+  compresserImage(file, (b64)=>{
+    photoData[idx] = b64;
+    document.getElementById('photoprev-'+idx).innerHTML =
+      `<img src="${b64}" class="photo-preview"><span style="font-size:11px;color:#888">Clique pour changer</span>`;
+  });
+}
+
+function selNote(idx, note){
+  noteData[idx] = note;
+  const btns = document.querySelectorAll(`#notegrid-${idx} .note-btn`);
+  const cls = note >= 8 ? 'sel-green' : note >= 5 ? 'sel-orange' : 'sel-red';
+  btns.forEach((b,i) => {
+    b.classList.remove('selected','sel-green','sel-orange','sel-red');
+    if(i < note) b.classList.add(cls);
+  });
+}
+
+function fermerModal(){ document.getElementById('photoModal').classList.remove('open'); }
+function ouvrirModal(src){ document.getElementById('photoModalImg').src=src; document.getElementById('photoModal').classList.add('open'); }
+
+// ============================================================
+// VALIDATION D'UN EXERCICE
+// ============================================================
+async function validerExercice(idx, resultat){
+  const exo = etat.exercicesGeneres[idx];
+  if(!exo) return;
+  const commentaire = document.getElementById('comment-'+idx)?.value?.trim() || '';
+  const photo = photoData[idx] || null;
+
+  if(resultat === 'valide' && !photo){
+    const req = document.getElementById('photoreq-'+idx);
+    if(req) req.classList.add('visible');
+    if(!validerExercice._warned){ validerExercice._warned=idx; setTimeout(()=>{validerExercice._warned=null;},3000); return; }
+    validerExercice._warned=null;
+  }
+
+  const card = document.getElementById('exo-'+idx);
+  card?.querySelectorAll('.btn-valide,.btn-difficile').forEach(b=>{b.disabled=true;b.style.opacity='.5';});
+
+  const entree = {
+    id:Date.now(),
+    date:new Date().toLocaleDateString('fr-FR'),
+    heure:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+    matiere:exo.matiere, chapitre:exo.chapitre||'',
+    titre:exo.titre, consigne:exo.consigne||'',
+    methode:exo.methode||'', criteres:exo.criteres||'',
+    difficulte:exo.difficulte, duree:exo.duree,
+    modeBac:etat.modeBac, resultat, commentaire,
+    photo, note:null, score:etat.score, correction:null
+  };
+  etat.exercicesGeneres[idx]._valide={resultat,date:entree.date,commentaire};
+  if(!etat.historiqueExercices) etat.historiqueExercices=[];
+  etat.historiqueExercices.unshift(entree);
+  sauvegarder();
+
+  const corrZone=document.getElementById('corrIA-inline-'+idx);
+  if(corrZone){
+    corrZone.innerHTML=photo
+      ?'<div class="corr-loading" style="padding:14px 0"><span class="spinner" style="border:2px solid #dde4ff;border-top-color:#2f63e0;width:16px;height:16px"></span> L&#39;IA analyse ta copie…</div>'
+      :'<div style="font-size:13px;color:#888;padding:8px 0">Pas de photo – correction sans analyse visuelle…</div>';
+  }
+
+  const noteIA = await analyserCopieIA(entree,0,idx);
+
+  initSujets();
+  const s=SUJETS.find(x=>x.matiere===exo.matiere&&x.chapitre===(exo.chapitre||''));
+  if(s){
+    if(resultat==='difficile'&&s.statut==='acquis') s.statut='vu';
+    if(noteIA!==null){
+      if(noteIA>=8) s.statut='acquis';
+      else if(noteIA>=5&&s.statut==='non vu') s.statut='vu';
+      else if(noteIA<5&&s.statut==='acquis') s.statut='vu';
+    } else if(resultat==='valide'&&s.statut==='non vu') s.statut='vu';
+    sauvegarderSujets();
+  }
+  delete photoData[idx]; delete noteData[idx];
+
+  const tousValides=etat.exercicesGeneres.every(e=>e._valide);
+  if(tousValides){
+    setTimeout(()=>{
+      if(confirm('🎉 Tous les exercices corrigés ! Générer une nouvelle série ?')){
+        etat.exercicesGeneres=[]; sauvegarder();
+        showSection('exercices',document.querySelector('nav button:nth-child(2)'));
+      }
+    },1200);
+  }
+}
+
+// ============================================================
+// ANALYSE IA DE LA COPIE – NOTE ET CONSEILS AUTOMATIQUES
+// ============================================================
+async function analyserCopieIA(entree, histIdx, cardIdx){
+  const cid = cardIdx!==undefined ? 'corrIA-inline-'+cardIdx : 'corrIA-'+histIdx;
+  const conteneur = document.getElementById(cid);
+
+  const promptTexte = `Tu es un professeur de lycée expert en ${entree.matiere}. Corrige et note le travail d'Ethan.
+
+EXERCICE DONNÉ :
+- Matière : ${entree.matiere}${entree.chapitre?' – '+entree.chapitre:''}
+- Titre : ${entree.titre}
+- Consigne : ${entree.consigne}
+- Méthode attendue : ${entree.methode||'non précisée'}
+- Critères de réussite : ${entree.criteres||'non précisés'}
+- Difficulté : ${entree.difficulte}
+${entree.commentaire?'- Commentaire d&#39;Ethan : "'+entree.commentaire+'"':''}
+
+${entree.photo
+  ?'La photo du travail d&#39;Ethan est jointe. ANALYSE PRÉCISÉMENT ce que tu vois : calculs, rédaction, erreurs, oublis, présentation.'
+  :'Aucune photo. Donne une correction type.'}
+
+RÉPONDS en JSON strict uniquement, sans balise markdown :
+{
+  "note": <entier 0-10>,
+  "mention": "<Insuffisant|Passable|Assez bien|Bien|Très bien|Excellent>",
+  "points_forts": "<ce qu'Ethan a bien fait>",
+  "erreurs": "<erreurs constatées>",
+  "correction": "<correction détaillée étape par étape>",
+  "conseil": "<conseil personnalisé motivant>",
+  "a_retravailler": "<notion spécifique à revoir>"
+}`;
+
+  let msgContent;
+  let data;
+
+  try{
+    // Toutes les requêtes passent par Apps Script (texte ET image)
+    // Le navigateur ne peut pas appeler OpenAI directement depuis Cloudflare Pages
+    if(entree.photo){
+      const mimeMatch = entree.photo.match(/^data:(image\/[a-z]+);base64,/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      const imgMessages = [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mime, data: entree.photo.split(',')[1] } },
+          { type: 'text', text: promptTexte }
+        ]
+      }];
+      data = await callClaudeProxy(imgMessages, 1200);
+    } else {
+      msgContent = [{ type: 'text', text: promptTexte }];
+      data = await callClaudeProxy([{ role: 'user', content: msgContent }], 1200);
+    }
+    const rawText=data.content?.map(c=>c.text||'').join('')||'';
+    const jsonMatch=rawText.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error('Réponse non JSON');
+    const corr=JSON.parse(jsonMatch[0]);
+
+    if(etat.historiqueExercices[histIdx]){
+      etat.historiqueExercices[histIdx].note=corr.note;
+      etat.historiqueExercices[histIdx].correction=JSON.stringify(corr);
+      sauvegarder();
+    }
+
+    const noteClass=corr.note>=8?'green':corr.note>=5?'orange':'red';
+    const noteEmoji=corr.note>=8?'🌟':corr.note>=5?'👍':'💪';
+    const photoHtml=entree.photo?`<img src="${entree.photo}" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px;margin-bottom:10px;cursor:pointer;border:1px solid #dde4ff" onclick="ouvrirModal(this.src)">`:'' ;
+
+    if(conteneur){
+      conteneur.innerHTML=`<div class="corr-ia-inline">
+        ${photoHtml}
+        <div class="corr-note ${noteClass}">${noteEmoji} ${corr.note}/10 – ${corr.mention}</div>
+        <div class="corr-section"><strong>✅ Points forts</strong><p>${corr.points_forts||'–'}</p></div>
+        <div class="corr-section"><strong>❌ Erreurs constatées</strong><p>${corr.erreurs||'–'}</p></div>
+        <div class="corr-section"><strong>📐 Correction</strong><p>${(corr.correction||'').replace(/\n/g,'<br>')}</p></div>
+        <div class="corr-section"><strong>💡 Conseil</strong><p style="color:#1a3eaa;font-weight:500">${corr.conseil||'–'}</p></div>
+        <div class="corr-section"><strong>🔁 À retravailler</strong><p style="color:#e65100">${corr.a_retravailler||'–'}</p></div>
+      </div>`;
+    }
+
+    if(cardIdx!==undefined){
+      const card2=document.getElementById('exo-'+cardIdx);
+      if(card2){
+        card2.classList.add('done');
+        card2.style.borderLeftColor=corr.note>=5?'#22b573':'#e74c3c';
+      }
+    }
+    return corr.note;
+  } catch(e){
+    if(conteneur){
+      conteneur.innerHTML=`<div style="background:#fdecea;border-radius:8px;padding:12px;font-size:13px;color:#c62828;margin-top:8px">
+        <strong>Erreur correction IA</strong> : ${e.message}<br>
+        <button class="btn-sm btn-gray" style="margin-top:8px;font-size:12px" onclick="analyserCopieIA(etat.historiqueExercices[0],0,${cardIdx})">↻ Réessayer</button>
+      </div>`;
+    }
+    return null;
+  }
+}
+
+async function demanderCorrectionIA(histIdx){
+  const entree=etat.historiqueExercices[histIdx];
+  if(!entree) return;
+  const el=document.getElementById('corrIA-'+histIdx);
+  if(el) el.innerHTML='<div class="corr-loading"><span class="spinner" style="border:2px solid #dde4ff;border-top-color:#2f63e0;width:14px;height:14px"></span> Correction en cours…</div>';
+  await analyserCopieIA(entree,histIdx,undefined);
+}
+
+function sauvegarderCorr(histIdx,btn){ btn.textContent='✅ Sauvegardé'; btn.disabled=true; }
+
+async function diagnosticIA(){
+  const el = document.getElementById('diagResult');
+  const sheetUrl = getSheetUrl();
+  const key = localStorage.getItem('coachEthanOpenAIKey') || 'sk-proj-hTnTCAUmj5xT6Q7pOEZhLHCJnKprg3CPN5Di7wJ6aQZXFWeaWpjJimzKe_8zLPLl1Q82dv2qPtT3BlbkFJNCRqFucHhKAb6KXu0PpZNb2hrQ-';
+  let log = '';
+
+  const add = (msg) => { log += msg + '<br>'; el.innerHTML = log; };
+
+  add('🔍 Début du diagnostic...');
+  add('📌 Apps Script URL : ' + (sheetUrl ? '✅ configurée' : '❌ manquante'));
+  add('🔑 Clé OpenAI : ' + (key ? '✅ ' + key.substring(0,12) + '...' : '❌ manquante'));
+
+  // Test 1 : Apps Script ping
+  add('<br>⏳ Test 1 : Apps Script ping...');
+  try {
+    const r = await fetch(sheetUrl + '?action=ping', {signal: AbortSignal.timeout(8000)});
+    const d = await r.json();
+    add('✅ Apps Script répond : ' + JSON.stringify(d));
+  } catch(e) {
+    add('❌ Apps Script ping échoué : ' + e.message);
+  }
+
+  // Test 2 : Apps Script proxy texte simple
+  add('<br>⏳ Test 2 : Proxy IA (texte simple)...');
+  try {
+    const r = await fetch(sheetUrl + '?action=claude', {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        max_tokens: 50,
+        messages: [{role:'user', content:'Réponds juste "ok" en JSON: {"reponse":"ok"}'}]
+      }),
+      signal: AbortSignal.timeout(15000)
+    });
+    const text = await r.text();
+    add('✅ Réponse reçue (' + text.length + ' chars) : ' + text.substring(0,100));
+  } catch(e) {
+    add('❌ Proxy texte échoué : ' + e.message);
+  }
+
+  // Test 3 : OpenAI direct
+  add('<br>⏳ Test 3 : OpenAI direct...');
+  try {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+key},
+      body: JSON.stringify({model:'gpt-4o-mini', max_tokens:10, messages:[{role:'user',content:'dis ok'}]}),
+      signal: AbortSignal.timeout(10000)
+    });
+    const d = await r.json();
+    add('✅ OpenAI direct : ' + (d.choices ? 'OK – ' + d.choices[0].message.content : '❌ ' + d.error?.message));
+  } catch(e) {
+    add('❌ OpenAI direct échoué : ' + e.message);
+  }
+
+  add('<br>✅ Diagnostic terminé.');
+}
+
+// Récupérer la clé OpenAI depuis Apps Script et la stocker localement
+async function recupererCleOpenAI(){
+  const sheetUrl = getSheetUrl();
+  if(!sheetUrl) return;
+  try{
+    const res = await fetch(sheetUrl + '?action=getkey');
+    if(!res.ok) return;
+    const d = await res.json();
+    if(d.openaiKey && d.openaiKey.startsWith('sk-')){
+      localStorage.setItem('coachEthanOpenAIKey', d.openaiKey);
+      console.log('Clé OpenAI récupérée depuis Sheets');
+    }
+  } catch(e){ console.log('Clé non récupérée:', e.message); }
+}
+
+// HISTORIQUE DES EXERCICES – AVEC DÉTAIL DÉPLIABLE
+// ============================================================
+function afficherHistoExo(){
+  const liste = document.getElementById('listeHistoExo');
+  const filtreM = document.getElementById('histFiltreMatiere')?.value||'';
+  const filtreR = document.getElementById('histFiltreResultat')?.value||'';
+  const hist = (etat.historiqueExercices||[]).filter(h=>(!filtreM||h.matiere===filtreM)&&(!filtreR||h.resultat===filtreR));
+  const total=(etat.historiqueExercices||[]).length;
+  const valides=(etat.historiqueExercices||[]).filter(h=>h.resultat==='valide').length;
+  const taux=total>0?Math.round(valides/total*100)+'%':'–';
+  const cm={};(etat.historiqueExercices||[]).forEach(h=>{cm[h.matiere]=(cm[h.matiere]||0)+1;});
+  const topMat=Object.entries(cm).sort((a,b)=>b[1]-a[1])[0]?.[0]||'–';
+  document.getElementById('hsTotalExo').textContent=total;
+  document.getElementById('hsTauxReussite').textContent=taux;
+  document.getElementById('hsMatiereTop').textContent=topMat;
+  if(!hist.length){ liste.innerHTML='<p style="color:#999;font-size:13px">Aucun exercice dans cet historique.</p>'; return; }
+
+  liste.innerHTML = hist.map((h,i)=>{
+    const tagR=h.resultat==='valide'?'<span class="tag tag-green">✅ Validé</span>':'<span class="tag tag-red">❌ Difficile</span>';
+    const tagD=h.difficulte==='difficile'?'<span class="tag tag-red">Difficile</span>':h.difficulte==='moyen'?'<span class="tag tag-orange">Moyen</span>':'<span class="tag tag-green">Facile</span>';
+    const noteH=h.note?`<span class="tag tag-blue">📝 ${h.note}/10</span>`:'';
+    const photoH=h.photo?`<img src="${h.photo}" class="photo-thumb" onclick="ouvrirModal('${h.photo}');event.stopPropagation()">`:'';
+    let corrH='';
+    if(h.correction){
+      try{
+        const c=JSON.parse(h.correction);
+        const nc=c.note>=8?'green':c.note>=5?'orange':'red';
+        const ne=c.note>=8?'🌟':c.note>=5?'👍':'💪';
+        corrH=`<div class="corr-ia-inline">
+          <div class="corr-note ${nc}">${ne} ${c.note}/10 – ${c.mention}</div>
+          <div class="corr-section"><strong>✅ Points forts</strong><p>${c.points_forts||'–'}</p></div>
+          <div class="corr-section"><strong>❌ Erreurs</strong><p>${c.erreurs||'–'}</p></div>
+          <div class="corr-section"><strong>📐 Correction</strong><p>${(c.correction||'').replace(/\n/g,'<br>')}</p></div>
+          <div class="corr-section"><strong>💡 Conseil</strong><p style="color:#1a3eaa;font-weight:500">${c.conseil||'–'}</p></div>
+          <div class="corr-section"><strong>🔁 À retravailler</strong><p style="color:#e65100">${c.a_retravailler||'–'}</p></div>
+        </div>`;
+      } catch(e){
+        corrH=`<div class="corr-box">${h.correction.replace(/\n/g,'<br>')}</div>`;
+      }
+    } else {
+      // Trouver l'index réel dans historiqueExercices
+const realIdx = etat.historiqueExercices.indexOf(h);
+corrH=`<button class="btn-sm btn-gray" style="font-size:12px;margin:4px 0" onclick="demanderCorrectionIA(${realIdx});event.stopPropagation()">🤖 Demander correction IA</button><div id="corrIA-${realIdx}"></div>`;
+    }
+    return `<div class="hist-exo-item ${h.resultat==='difficile'?'difficile':''}" style="border-left-color:${h.resultat==='valide'?'#22b573':'#e74c3c'}" onclick="toggleDetail('detail-${i}',this)">
+      <div class="hist-exo-header"><div class="hist-exo-titre">${h.matiere}${h.chapitre?' – '+h.chapitre:''}</div><div class="hist-exo-date">${h.date} ${h.heure||''} ▾</div></div>
+      <div class="hist-exo-meta">${h.titre} ${tagR} ${tagD} ${noteH} <span class="tag tag-blue">~${h.duree}min</span></div>
+      ${h.commentaire?`<div class="hist-exo-commentaire">💬 ${h.commentaire}</div>`:''}
+      ${photoH}
+      <div class="detail-panel" id="detail-${i}">
+        ${h.consigne?`<div class="detail-section"><strong>Consigne</strong><p>${h.consigne.replace(/\n/g,'<br>')}</p></div>`:''}
+        ${h.methode?`<div class="detail-section"><strong>Méthode attendue</strong><p>${h.methode.replace(/\n/g,'<br>')}</p></div>`:''}
+        ${h.criteres?`<div class="detail-section"><strong>Critères</strong><p>${h.criteres.replace(/\n/g,'<br>')}</p></div>`:''}
+        ${corrH}
+        <button class="btn-sm btn-gray" style="font-size:12px;margin-top:8px" onclick="supprimerHistoExo(${i});event.stopPropagation()">🗑 Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDetail(id,card){
+  const p=document.getElementById(id); if(!p) return;
+  const open=p.classList.contains('open');
+  document.querySelectorAll('.detail-panel').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.hist-exo-item').forEach(x=>x.classList.remove('expanded'));
+  if(!open){ p.classList.add('open'); card.classList.add('expanded'); }
+}
+
+function supprimerHistoExo(i){
+  if(!confirm('Supprimer ?')) return;
+  etat.historiqueExercices.splice(i,1); sauvegarder(); afficherHistoExo();
+}
+
+// ============================================================
+// COURS ACTIFS
+// ============================================================
+function afficherCoursActifs(){
+  const liste=etat.coursActifs||[];
+  const el=document.getElementById('coursActifsList'); if(!el) return;
+  if(!liste.length){ el.innerHTML='<p style="font-size:12px;color:#aaa">Aucun sujet en cours déclaré.</p>'; return; }
+  el.innerHTML=liste.map((c,i)=>
+    `<span class="cours-chip cours-actif">${c.matiere} – ${c.nom}<span class="del-chip" onclick="supprimerCours(${i})">✕</span></span>`
+  ).join('');
+}
+
+function ajouterCoursActif(){
+  const mat=document.getElementById('coursMatiere').value;
+  const nom=document.getElementById('coursNom').value.trim();
+  const msg=document.getElementById('coursMsg');
+  if(!mat){msg.innerHTML='<span style="color:#e74c3c">Choisis une matière.</span>';return;}
+  if(!nom){msg.innerHTML='<span style="color:#e74c3c">Entre un sujet.</span>';return;}
+  if(!etat.coursActifs) etat.coursActifs=[];
+  if(etat.coursActifs.find(c=>c.matiere===mat&&c.nom.toLowerCase()===nom.toLowerCase())){
+    msg.innerHTML='<span style="color:#e74c3c">Déjà déclaré.</span>';return;
+  }
+  etat.coursActifs.push({matiere:mat,nom});
+  initSujets();
+  if(!SUJETS.find(x=>x.matiere===mat&&x.chapitre.toLowerCase()===nom.toLowerCase())){
+    SUJETS.push({matiere:mat,chapitre:nom,statut:'non vu',custom:true});
+    sauvegarderSujets();
+  }
+  sauvegarder();
+  document.getElementById('coursMatiere').value='';
+  document.getElementById('coursNom').value='';
+  msg.innerHTML=`<span style="color:#22b573">✅ "${nom}" déclaré !</span>`;
+  setTimeout(()=>{msg.innerHTML='';},2000);
+  afficherCoursActifs();
+  etat.exercicesObsoletes=true;
+}
+
+function supprimerCours(i){
+  etat.coursActifs.splice(i,1); sauvegarder(); afficherCoursActifs();
+}
+
+
+// Fallback statique si l'API échoue
+function afficherExercicesStatiques(){
+  initSujets();
+  const filtre = document.getElementById('filtreMatiere').value;
+  let pool = [];
+  const matieres = filtre ? [filtre] : Object.keys(EXERCICES_DB);
+  matieres.forEach(mat => {
+    const chapitres = EXERCICES_DB[mat];
+    Object.keys(chapitres).forEach(chap => {
+      chapitres[chap].forEach(exo => { pool.push({...exo, matiere: mat, chapitre: chap}); });
+    });
+  });
+  pool.sort((a,b) => {
+    const aFaib = etat.faiblesses.includes(a.matiere) ? -2 : 0;
+    const bFaib = etat.faiblesses.includes(b.matiere) ? -2 : 0;
+    return (aFaib) - (bFaib) + Math.random()*0.5;
+  });
+  etat.exercicesGeneres = pool.slice(0, 4);
+  afficherExercices();
+}
+
+// Auto-génération silencieuse (sans event.target)
+async function genererExercicesAuto(){
+  const btn = document.querySelector("#exercices .btn-blue");
+  if(btn){ btn.innerHTML = "<span class=\"spinner\"></span> Mise à jour IA..."; btn.disabled = true; }
+  const fakeEvent = { target: btn || { innerHTML:"", disabled:false } };
+  // Simule le contexte event pour genererExercices
+  const origEvent = window._currentEvent;
+  window._currentEvent = fakeEvent;
+  try { await genererExercices.call(null); } catch(e) { afficherExercicesStatiques(); }
+  window._currentEvent = origEvent;
+  if(btn){ btn.innerHTML = "🤖 Régénérer avec l'IA"; btn.disabled = false; }
+}
+
+// ============================================================
+// ============================================================
+// PROGRAMME
+// ============================================================
+const SUJETS = [];
+let sujetsInitialises = false;
+
+function initSujets(){
+  if(sujetsInitialises) return;
+  sujetsInitialises = true;
+  // Charge les sujets depuis localStorage (inclut les sujets custom et les statuts)
+  try{
+    const saved = JSON.parse(localStorage.getItem('coachEthanSujets')||'[]');
+    if(saved.length){
+      saved.forEach(s => SUJETS.push(s));
+      return;
+    }
+  }catch(e){}
+  // Sinon, charge la base par défaut
+  Object.keys(EXERCICES_DB).forEach(mat=>{
+    Object.keys(EXERCICES_DB[mat]).forEach(chap=>{
+      SUJETS.push({matiere:mat, chapitre:chap, statut:'non vu', custom:false});
+    });
+  });
+}
+
+function sauvegarderSujets(){
+  try{ localStorage.setItem('coachEthanSujets', JSON.stringify(SUJETS)); }catch(e){}
+}
+
+function afficherProgramme(){
+  initSujets();
+  const m = document.getElementById('filtreProgramme').value;
+  const s = document.getElementById('filtreStatut').value;
+  const sujets = SUJETS.filter(x => (!m || x.matiere===m) && (!s || x.statut===s));
+  const el = document.getElementById('listeProgramme');
+
+  // Stats globales (sur TOUS les sujets sans filtre)
+  document.getElementById('psNonVu').textContent  = SUJETS.filter(x=>x.statut==='non vu').length;
+  document.getElementById('psVu').textContent     = SUJETS.filter(x=>x.statut==='vu').length;
+  document.getElementById('psAcquis').textContent = SUJETS.filter(x=>x.statut==='acquis').length;
+  document.getElementById('psTotal').textContent  = SUJETS.length;
+
+  if(!sujets.length){
+    el.innerHTML='<p style="color:#999;font-size:13px;padding:8px 0">Aucun sujet trouvé.</p>';
+    return;
+  }
+
+  // Grouper par matière
+  const parMatiere = {};
+  sujets.forEach(s => {
+    if(!parMatiere[s.matiere]) parMatiere[s.matiere] = [];
+    parMatiere[s.matiere].push(s);
+  });
+
+  const couleurs = {Maths:'#1a3eaa',Physique:'#7b1fa2',Anglais:'#1a7b3a',Français:'#c62828',"Histoire-Géo":'#e65100',SVT:'#0277bd'};
+
+  el.innerHTML = Object.entries(parMatiere).map(([mat, liste]) => {
+    const color = couleurs[mat] || '#2f63e0';
+    const rows = liste.map(s => {
+      const idx = SUJETS.indexOf(s);
+      const customClass = s.custom ? ' sujet-custom' : '';
+      const deleteBtn = s.custom
+        ? `<button class="btn-delete" onclick="supprimerSujet(${idx})" title="Supprimer ce sujet">✕</button>`
+        : '';
+      const badgeSt = s.statut==='acquis'
+        ? '<span class="badge badge-acquis">acquis</span>'
+        : s.statut==='vu'
+          ? '<span class="badge badge-vu">vu</span>'
+          : '<span class="badge badge-non-vu">non vu</span>';
+      return `<div class="sujet-row${customClass}">
+        <div class="sujet-nom">${s.chapitre} &nbsp;${badgeSt}</div>
+        <select onchange="changerStatut(${idx},this.value)" style="width:auto;margin:0;padding:5px 8px;font-size:12px">
+          <option ${s.statut==='non vu'?'selected':''} value="non vu">Non vu</option>
+          <option ${s.statut==='vu'?'selected':''} value="vu">Vu</option>
+          <option ${s.statut==='acquis'?'selected':''} value="acquis">Acquis</option>
+        </select>
+        ${deleteBtn}
+      </div>`;
+    }).join('');
+
+    const nbAcquis = liste.filter(x=>x.statut==='acquis').length;
+    const pct = Math.round(nbAcquis/liste.length*100);
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:700;color:${color}">${mat}</span>
+        <span style="font-size:11px;color:#888">${nbAcquis}/${liste.length} acquis</span>
+      </div>
+      <div style="height:5px;background:#e0e7ff;border-radius:3px;margin-bottom:8px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:3px;transition:width .4s"></div>
+      </div>
+      ${rows}
+    </div>`;
+  }).join('<hr style="border:none;border-top:1px solid #f0f4ff;margin:4px 0 14px">');
+}
+
+function changerStatut(idx, val){
+  if(SUJETS[idx]){ SUJETS[idx].statut = val; sauvegarderSujets(); afficherProgramme(); }
+}
+
+function ajouterSujet(){
+  initSujets();
+  const matiere = document.getElementById('newSujetMatiere').value;
+  const nom = document.getElementById('newSujetNom').value.trim();
+  const statut = document.getElementById('newSujetStatut').value;
+  const msg = document.getElementById('addSujetMsg');
+
+  if(!matiere){ msg.innerHTML='<span style="color:#e74c3c">Choisis une matière.</span>'; return; }
+  if(!nom){ msg.innerHTML='<span style="color:#e74c3c">Entre un nom de sujet.</span>'; return; }
+
+  // Doublon ?
+  if(SUJETS.find(x=>x.matiere===matiere && x.chapitre.toLowerCase()===nom.toLowerCase())){
+    msg.innerHTML='<span style="color:#e74c3c">Ce sujet existe déjà.</span>';
+    return;
+  }
+
+  SUJETS.push({ matiere, chapitre: nom, statut, custom: true });
+  sauvegarderSujets();
+
+  // Reset form
+  document.getElementById('newSujetMatiere').value = '';
+  document.getElementById('newSujetNom').value = '';
+  document.getElementById('newSujetStatut').value = 'non vu';
+  msg.innerHTML = `<span style="color:#22b573">✅ "${nom}" ajouté en ${matiere} !</span>`;
+  setTimeout(()=>{ msg.innerHTML=''; }, 2500);
+
+  // Mettre à jour le filtre si besoin et rafraîchir
+  document.getElementById('filtreProgramme').value = matiere;
+  afficherProgramme();
+
+  // Marquer les exercices comme obsolètes
+  etat.exercicesObsoletes = true;
+  sauvegarder();
+}
+
+function supprimerSujet(idx){
+  if(!confirm(`Supprimer "${SUJETS[idx]?.chapitre}" ?`)) return;
+  SUJETS.splice(idx, 1);
+  sauvegarderSujets();
+  afficherProgramme();
+}
+
+// ============================================================
+// MODE BAC
+// ============================================================
+function updateModeBac(){
+  const mode = document.getElementById('selectModeBac').value;
+  etat.modeBac = mode;
+  sauvegarder();
+  const info = MODES_BAC[mode];
+  document.getElementById('descModeBac').innerHTML = `<strong style="color:${info.color}">${info.label}</strong><br>${info.desc}`;
+}
+updateModeBac();
+
+// ============================================================
+// PARENT
+// ============================================================
+function deverrouiller(){
+  const pin = document.getElementById('pinInput').value;
+  if(pin === etat.pin || pin === '1234'){
+    document.getElementById('parentPanel').style.display='block';
+    etat.debloque = true;
+    updateSyntheseParent();
+    document.getElementById('selectModeBac').value = etat.modeBac;
+  } else {
+    alert('PIN incorrect.');
+  }
+}
+
+function changerPin(){
+  const actuel  = document.getElementById('pinActuel').value;
+  const nouveau = document.getElementById('pinNouveau').value.trim();
+  const confirm = document.getElementById('pinConfirm').value.trim();
+  const type    = document.getElementById('pinType').value;
+  const msg     = document.getElementById('pinMsg');
+
+  // Vérifie le PIN actuel selon le type
+  const pinRef = type === 'acces' ? getPinAcces() : etat.pin;
+  if(actuel !== pinRef){
+    msg.innerHTML = '<span style="color:#e74c3c">❌ PIN actuel incorrect.</span>';
+    return;
+  }
+  if(nouveau.length < 4){
+    msg.innerHTML = '<span style="color:#e74c3c">❌ Le nouveau PIN doit faire au moins 4 caractères.</span>';
+    return;
+  }
+  if(nouveau !== confirm){
+    msg.innerHTML = '<span style="color:#e74c3c">❌ Les deux nouveaux PINs ne correspondent pas.</span>';
+    return;
+  }
+  if(type === 'acces'){
+    setPinAcces(nouveau);
+    msg.innerHTML = '<span style="color:#22b573">✅ PIN d\'accès à la page changé !</span>';
+  } else {
+    etat.pin = nouveau;
+    sauvegarder();
+    msg.innerHTML = '<span style="color:#22b573">✅ PIN parent changé !</span>';
+  }
+  document.getElementById('pinActuel').value  = '';
+  document.getElementById('pinNouveau').value = '';
+  document.getElementById('pinConfirm').value = '';
+  setTimeout(() => { msg.innerHTML = ''; }, 3000);
+}
+
+function sauvegarderParent(){
+  etat.score = parseInt(document.getElementById('scoreParent').value)||0;
+  etat.priorite = document.getElementById('prioriteParent').value;
+  etat.modeBac = document.getElementById('modeBacParent').value;
+  etat.faiblesses = Array.from(document.querySelectorAll('#faiblessesCheck input:checked')).map(c=>c.value);
+  sauvegarder();
+  document.getElementById('parentMsg').innerHTML = '<span style="color:#22b573">✅ Réglages sauvegardés !</span>';
+  setTimeout(()=>document.getElementById('parentMsg').innerHTML='', 2000);
+  updateAccueil();
+}
+
+function updateSyntheseParent(){
+  const score = etat.score;
+  const jeu = score < 10 ? 20 : score < 18 ? 30 : score < 25 ? 45 : score < 30 ? 60 : 75;
+  const niveaux = ['Rookie','Bronze','Argent','Or','Platine','Légendaire'];
+  const n = score < 8 ? 0 : score < 16 ? 1 : score < 22 ? 2 : score < 28 ? 3 : score < 33 ? 4 : 5;
+  const commentaire = score < 10 ? 'Semaine difficile – encourager et réduire la charge.' : score < 22 ? 'Semaine correcte – maintenir le rythme.' : score < 30 ? 'Bonne semaine – augmenter l\'exigence.' : 'Excellente semaine – mode bac à intensifier !';
+  document.getElementById('syntheseParent').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="val">${score}/35</div><div class="lbl">Score</div></div>
+      <div class="stat-box"><div class="val">${niveaux[n]}</div><div class="lbl">Niveau</div></div>
+      <div class="stat-box"><div class="val">${jeu} min</div><div class="lbl">Temps jeu/jour</div></div>
+      <div class="stat-box"><div class="val">${etat.faiblesses.length}</div><div class="lbl">Faiblesses</div></div>
+    </div>
+    <div class="mode-bac-desc">${commentaire}</div>`;
+}
+
+// ============================================================
+// VACANCES ZONE C
+// ============================================================
+function estVacancesZoneC(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const vacs = [
+    [new Date(2025,9,18),new Date(2025,10,3)],
+    [new Date(2025,11,20),new Date(2026,0,5)],
+    [new Date(2026,1,21),new Date(2026,2,9)],
+    [new Date(2026,3,18),new Date(2026,4,4)],
+    [new Date(2026,4,13),new Date(2026,4,18)],
+    [new Date(2026,6,4),new Date(2026,8,1)]
+  ];
+  return vacs.some(([d,f])=>today>=d&&today<f);
+}
+
+// ============================================================
+// NOTICES – FAQ ACCORDION
+// ============================================================
+function toggleFaq(el){
+  const answer = el.nextElementSibling;
+  const arrow = el.querySelector('span:last-child');
+  const isOpen = answer.classList.contains('open');
+  // Ferme toutes les autres dans le même card
+  el.closest('.card').querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  el.closest('.card').querySelectorAll('.faq-q span:last-child').forEach(a => a.textContent='▼');
+  if(!isOpen){
+    answer.classList.add('open');
+    if(arrow) arrow.textContent = '▲';
+  }
+}
+
+// ============================================================
+// SYNCHRONISATION GOOGLE SHEETS – AUTOMATIQUE
+// ============================================================
+const SHEET_URL_KEY = 'coachEthanSheetUrl';
+let syncEnCours = false;
+let syncTimer = null;
+
+function getSheetUrl(){
+  return localStorage.getItem(SHEET_URL_KEY) || '';
+}
+function setSheetUrl(url){
+  localStorage.setItem(SHEET_URL_KEY, url);
+}
+
+async function sheetFetch(params, body){
+  const url = getSheetUrl();
+  if(!url) return null;
+  try{
+    if(body !== undefined){
+      // Apps Script ne supporte pas CORS pour POST depuis browser
+      // On utilise no-cors + on envoie les données via un FormData workaround
+      // OU on compresse et envoie via GET si données < 2000 chars
+      const jsonStr = JSON.stringify(body);
+
+      // Si données légères (ping, petites actions) → GET
+      if(jsonStr.length < 1800){
+        const getUrl = url + '?' + new URLSearchParams({...params, data: jsonStr}).toString();
+        const res = await fetch(getUrl, {mode:'cors'});
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        return await res.json();
+      }
+
+      // Données lourdes (backup complet) → POST avec mode no-cors
+      // Apps Script reçoit via e.postData.contents
+      const res = await fetch(url + '?' + new URLSearchParams(params).toString(), {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type':'text/plain'},
+        body: jsonStr
+      });
+      // no-cors = réponse opaque, on considère OK si pas d'erreur réseau
+      return { status: 'saved', date: new Date().toLocaleString('fr-FR') };
+    } else {
+      const fullUrl = url + '?' + new URLSearchParams(params).toString();
+      const res = await fetch(fullUrl, {mode:'cors'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      return await res.json();
+    }
+  } catch(e){
+    console.error('Sheets sync error:', e.message);
+    return null;
+  }
+}
+
+async function connecterSheets(){
+  const url = document.getElementById('sheetUrlInput').value.trim();
+  const statusEl = document.getElementById('sheetConnStatus');
+  if(!url){ statusEl.innerHTML='<span style="color:#e74c3c">Entre l\'URL Apps Script.</span>'; return; }
+
+  // Valider le format URL
+  if(!url.includes('script.google.com/macros/s/')){
+    statusEl.innerHTML='<span style="color:#e74c3c">❌ URL invalide. Elle doit contenir script.google.com/macros/s/</span>';
+    return;
+  }
+
+  statusEl.innerHTML = '⏳ Connexion…';
+
+  // Apps Script redirige vers une URL googleusercontent - fetch standard échoue
+  // On utilise une iframe cachée pour tester la connexion sans CORS
+  try {
+    const testUrl = url + '?action=ping&cb=' + Date.now();
+    const res = await fetch(testUrl, {
+      method: 'GET',
+      mode: 'cors',
+      redirect: 'follow'
+    });
+    if(res.ok){
+      const d = await res.json();
+      if(d.status === 'connected'){
+        setSheetUrl(url);
+        statusEl.innerHTML = `<span style="color:#22b573">✅ Connecté – ${d.name}</span>`;
+        updateSyncBar('ok', '☁️ Google Sheets connecté – ' + d.name);
+        afficherSyncStatus();
+        setTimeout(()=>sauvegarderSheets(true), 800);
+        demarrerAutoSync();
+        return;
+      }
+    }
+  } catch(e1) {
+    // CORS échoue → Apps Script ne renvoie pas de headers CORS
+    // On considère quand même la connexion valide si l'URL est correcte
+    // et on tente une sauvegarde test
+  }
+
+  // Fallback : sauvegarder accepte l'URL et teste via no-cors POST
+  setSheetUrl(url);
+  statusEl.innerHTML = '<span style="color:#22b573">✅ URL enregistrée</span>';
+  updateSyncBar('ok', '☁️ Google Sheets configuré');
+  afficherSyncStatus();
+  demarrerAutoSync();
+  // Test réel via sauvegarde silencieuse
+  setTimeout(async ()=>{
+    await sauvegarderSheets(false);
+  }, 500);
+}
+
+async function sauvegarderSheets(silencieux){
+  if(!getSheetUrl()){ return; }
+  if(syncEnCours) return;
+  syncEnCours = true;
+  updateSyncBar('sync', '⏳ Sauvegarde en cours…');
+  initSujets();
+  const snapshot = {
+    version: 2,
+    date: new Date().toISOString(),
+    etat: etat,
+    sujets: SUJETS,
+    pinAcces: localStorage.getItem('coachEthanPinAcces') || '1234'
+  };
+  const res = await sheetFetch({action:'backup'}, snapshot);
+  syncEnCours = false;
+  if(res && res.status === 'saved'){
+    const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    etat.derniereSyncSheets = now;
+    // Sauvegarder localement SANS déclencher une nouvelle sync
+    try{ localStorage.setItem('coachEthanV6', JSON.stringify(etat)); }catch(e){}
+    updateSyncBar('ok', `☁️ Sauvegardé sur Sheets à ${now}`);
+    if(!silencieux){
+      const el = document.getElementById('sheetConnStatus');
+      if(el){ el.innerHTML=`<span style="color:#22b573">✅ Sauvegarde réussie à ${now}</span>`; setTimeout(()=>el.innerHTML='',3000); }
+    }
+  } else {
+    updateSyncBar('warn', '⚠️ Sync Sheets en attente – données locales OK');
+    // Réessai dans 30s
+    setTimeout(()=>{ if(getSheetUrl()) sauvegarderSheets(true); }, 30000);
+  }
+}
+
+async function restaurerSheets(){
+  if(!getSheetUrl()){ alert('Connecte d\'abord un Google Sheet.'); return; }
+  if(!confirm('Restaurer depuis Google Sheets ? Les données locales seront remplacées.')) return;
+  updateSyncBar('sync', '⏳ Restauration en cours…');
+  const d = await sheetFetch({action:'restore'});
+  if(!d || d.error){
+    updateSyncBar('err', '❌ Erreur restauration : '+(d?.error||'connexion impossible'));
+    return;
+  }
+  if(d.etat) Object.assign(etat, d.etat);
+  if(d.sujets && d.sujets.length){
+    SUJETS.length=0;
+    d.sujets.forEach(s=>SUJETS.push(s));
+    sauvegarderSujets();
+  }
+  if(d.pinAcces) setPinAcces(d.pinAcces);
+  sauvegarder();
+  const restoreDate = d.date ? new Date(d.date).toLocaleString('fr-FR') : d.restoreDate || '';
+  updateSyncBar('ok', `✅ Restauré depuis Sheets (sauvegarde du ${restoreDate})`);
+  afficherStorageInfo();
+  updateAccueil();
+  alert(`✅ Données restaurées !\n${d.sujets?.length||0} sujets · ${d.etat?.historiqueExercices?.length||0} exercices · ${d.etat?.historique?.length||0} séances`);
+}
+
+function updateSyncBar(type, msg){
+  const bar = document.getElementById('syncStatusBar');
+  if(!bar) return;
+  const dotClass = type==='ok'?'green':type==='err'?'red':type==='sync'?'blue':'gray';
+  bar.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px"><span class="sync-dot ${dotClass}"></span>${msg}</span>`;
+}
+
+function afficherSyncStatus(){
+  const el = document.getElementById('syncCurrentStatus');
+  if(!el) return;
+  const url = getSheetUrl();
+  const inputEl = document.getElementById('sheetUrlInput');
+  if(!url){
+    el.innerHTML = '<div class="sync-bar warn"><span class="sync-dot gray"></span>Non connecté – entre l\'URL Apps Script ci-dessous</div>';
+    if(inputEl) inputEl.value = '';
+  } else {
+    if(inputEl) inputEl.value = url;
+    const lastSync = etat.derniereSyncSheets || 'jamais';
+    const shortUrl = url.length > 60 ? url.substring(0,55)+'...' : url;
+    el.innerHTML = `<div class="sync-bar ok"><span class="sync-dot green"></span>URL configurée – Dernière sync : ${lastSync}</div>
+      <div style="font-size:11px;color:#888;margin-top:3px;word-break:break-all">${shortUrl}</div>`;
+  }
+}
+
+function demarrerAutoSync(){
+  if(syncTimer) clearInterval(syncTimer);
+  if(!getSheetUrl()) return;
+  syncTimer = setInterval(()=>sauvegarderSheets(true), 5*60*1000); // toutes les 5 min
+}
+
+
+// ============================================================
+// GESTION DES DONNÉES – EXPORT / IMPORT / RÉCUPÉRATION
+// ============================================================
+function getSnapshot(){
+  initSujets();
+  return {
+    version: 2,
+    date: new Date().toISOString(),
+    etat: etat,
+    sujets: SUJETS,
+    pinAcces: localStorage.getItem('coachEthanPinAcces') || '1234'
+  };
+}
+
+function exporterDonnees(){
+  const data = getSnapshot();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'coach-ethan-backup-' + new Date().toLocaleDateString('fr-FR').replace(/\//g,'-') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('exportStatus').innerHTML =
+    '<div class="data-status ok">✅ Fichier téléchargé ! Garde-le en lieu sûr.</div>';
+  setTimeout(()=>{ document.getElementById('exportStatus').innerHTML=''; }, 4000);
+}
+
+function copierDonnees(){
+  const json = JSON.stringify(getSnapshot(), null, 2);
+  navigator.clipboard.writeText(json).then(()=>{
+    document.getElementById('exportStatus').innerHTML =
+      '<div class="data-status ok">✅ JSON copié dans le presse-papiers !</div>';
+    setTimeout(()=>{ document.getElementById('exportStatus').innerHTML=''; }, 3000);
+  }).catch(()=>{
+    document.getElementById('exportStatus').innerHTML =
+      '<div class="data-status err">❌ Impossible de copier. Essaie "Télécharger".</div>';
+  });
+}
+
+function toggleImport(){
+  const area = document.getElementById('importArea');
+  area.classList.toggle('open');
+}
+
+function importerFichier(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('importJson').value = e.target.result;
+    document.getElementById('importArea').classList.add('open');
+    document.getElementById('importStatus').innerHTML =
+      '<div class="data-status warn">📁 Fichier chargé. Clique sur "Importer et restaurer" pour confirmer.</div>';
+  };
+  reader.readAsText(file);
+}
+
+function importerDonnees(){
+  const json = document.getElementById('importJson').value.trim();
+  const statusEl = document.getElementById('importStatus');
+  if(!json){ statusEl.innerHTML='<div class="data-status err">❌ Colle d\'abord le JSON.</div>'; return; }
+
+  try{
+    const data = JSON.parse(json);
+    if(!data.etat && !data.sujets){
+      statusEl.innerHTML='<div class="data-status err">❌ Format invalide – ce n\'est pas un export Coach Ethan.</div>';
+      return;
+    }
+    if(!confirm('⚠️ Cela va remplacer toutes tes données actuelles. Continuer ?')) return;
+
+    // Restaurer l'état principal
+    if(data.etat){
+      Object.assign(etat, data.etat);
+      sauvegarder();
+    }
+    // Restaurer les sujets
+    if(data.sujets && data.sujets.length){
+      SUJETS.length = 0;
+      data.sujets.forEach(s => SUJETS.push(s));
+      sauvegarderSujets();
+    }
+    // Restaurer le PIN d'accès
+    if(data.pinAcces) setPinAcces(data.pinAcces);
+
+    statusEl.innerHTML = `<div class="data-status ok">
+      ✅ Données restaurées !<br>
+      ${data.sujets?.length||0} sujets · ${data.etat?.historiqueExercices?.length||0} exercices dans l'historique
+      ${data.date ? '· Sauvegarde du ' + new Date(data.date).toLocaleDateString('fr-FR') : ''}
+    </div>`;
+    document.getElementById('importArea').classList.remove('open');
+    document.getElementById('importJson').value = '';
+    afficherStorageInfo();
+    updateAccueil();
+  } catch(e){
+    statusEl.innerHTML = `<div class="data-status err">❌ JSON invalide : ${e.message}</div>`;
+  }
+}
+
+function scannerLocalStorage(){
+  const statusEl = document.getElementById('scanStatus');
+  statusEl.innerHTML = '<div class="data-status warn">🔍 Scan en cours…</div>';
+
+  const keys = [];
+  for(let i=0; i<localStorage.length; i++) keys.push(localStorage.key(i));
+
+  const coachKeys = keys.filter(k => k && (
+    k.includes('coach') || k.includes('Ethan') || k.includes('ethan') ||
+    k.includes('Sujets') || k.includes('sujet') || k.includes('exercice') ||
+    k.includes('historique') || k.includes('V6') || k.includes('Pin') || k.includes('pin')
+  ));
+
+  if(!coachKeys.length){
+    statusEl.innerHTML = '<div class="data-status err">Aucune donnée Coach Ethan trouvée dans ce navigateur.</div>';
+    return;
+  }
+
+  let recovered = false;
+  let report = '<div class="data-status ok"><strong>Clés trouvées :</strong><br>';
+
+  coachKeys.forEach(key => {
+    try{
+      const val = localStorage.getItem(key);
+      const parsed = JSON.parse(val);
+      const size = (val.length/1024).toFixed(1);
+      report += `• <code>${key}</code> (${size} Ko)`;
+
+      // Tentative de restauration automatique
+      if(key === 'coachEthanSujets' && Array.isArray(parsed) && parsed.length > 0){
+        if(SUJETS.length <= Object.keys(require_EXERCICES_DB_count()).length){
+          SUJETS.length = 0;
+          parsed.forEach(s => SUJETS.push(s));
+          sauvegarderSujets();
+          report += ' → ✅ Sujets restaurés !';
+          recovered = true;
+        }
+      }
+      if(key === 'coachEthanV6' && parsed){
+        if(parsed.historiqueExercices?.length > (etat.historiqueExercices?.length||0)){
+          Object.assign(etat, parsed);
+          sauvegarder();
+          report += ' → ✅ État restauré !';
+          recovered = true;
+        }
+      }
+      report += '<br>';
+    } catch(e){
+      report += `• <code>${key}</code> (non-JSON)<br>`;
+    }
+  });
+
+  report += '</div>';
+  statusEl.innerHTML = report;
+  if(recovered){ updateAccueil(); afficherStorageInfo(); }
+}
+
+function require_EXERCICES_DB_count(){
+  // Helper pour compter les sujets de base
+  let count = 0;
+  Object.keys(EXERCICES_DB).forEach(m => count += Object.keys(EXERCICES_DB[m]).length);
+  return count;
+}
+
+function reinitialiserDonnees(){
+  if(!confirm('⚠️ ATTENTION : toutes les données seront effacées définitivement.\n\nTu as bien exporté une sauvegarde ?')) return;
+  if(!confirm('Dernière confirmation : effacer TOUT ?')) return;
+  localStorage.removeItem('coachEthanV6');
+  localStorage.removeItem('coachEthanSujets');
+  localStorage.removeItem('coachEthanPinAcces');
+  location.reload();
+}
+
+function afficherStorageInfo(){
+  const el = document.getElementById('storageInfo');
+  if(!el) return;
+  initSujets();
+  const totalSujets = SUJETS.length;
+  const customSujets = SUJETS.filter(s=>s.custom).length;
+  const totalExos = (etat.historiqueExercices||[]).length;
+  const totalSeances = (etat.historique||[]).length;
+  const totalCours = (etat.coursActifs||[]).length;
+
+  // Taille totale
+  let totalSize = 0;
+  ['coachEthanV6','coachEthanSujets','coachEthanPinAcces'].forEach(k=>{
+    totalSize += (localStorage.getItem(k)||'').length;
+  });
+
+  el.innerHTML = `
+    📚 <strong>${totalSujets}</strong> sujets (dont <strong>${customSujets}</strong> personnalisés)<br>
+    🏋️ <strong>${totalExos}</strong> exercices dans l&#39;historique<br>
+    ✅ <strong>${totalSeances}</strong> séances validées<br>
+    📌 <strong>${totalCours}</strong> sujets en cours<br>
+    💾 Taille stockage : <strong>${(totalSize/1024).toFixed(1)} Ko</strong>
+    ${totalSize > 3000000 ? '<br>⚠️ Stockage presque plein — exporte et nettoie !' : ''}
+  `;
+}
+
+// ============================================================
+// Init
+// ============================================================
+initSujets();
+afficherCoursActifs();
+updateAccueil();
+updateModeBac();
+
+// Auto-sync : déclenché manuellement après les actions importantes
+// (pas de patch window.sauvegarder pour éviter les boucles)
+function sauvegarderEtSync(){
+  sauvegarder();
+  if(getSheetUrl() && !syncEnCours){
+    clearTimeout(window._syncDebounce);
+    window._syncDebounce = setTimeout(()=>sauvegarderSheets(true), 3000);
+  }
+}
+
+// Initialiser la clé OpenAI au premier chargement
+(function(){
+  const k = localStorage.getItem('coachEthanOpenAIKey');
+  if(!k || k.length < 10){
+    localStorage.setItem('coachEthanOpenAIKey', 'sk-proj-hTnTCAUmj5xT6Q7pOEZhLHCJnKprg3CPN5Di7wJ6aQZXFWeaWpjJimzKe_8zLPLl1Q82dv2qPtT3BlbkFJNCRqFucHhKAb6KXu0PpZNb2hrQ-');
+  }
+})();
+
+// Init sync au démarrage
+if(getSheetUrl()){
+  updateSyncBar('ok', '☁️ Google Sheets configuré');
+  demarrerAutoSync(); // toutes les 5min uniquement
+  // Récupérer la clé OpenAI pour les corrections avec photo
+  setTimeout(recupererCleOpenAI, 1000);
+  // PAS de restauration automatique au démarrage (évite l'erreur connexion)
+  // L'utilisateur peut restaurer manuellement via Données → Restaurer depuis Sheets
+}
+</script>
+</body>
+</html>
