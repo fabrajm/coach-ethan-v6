@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Fiche vente FABRA JM</title>
+<style>
+  @page { size: A4; margin: 9mm; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color: #111; margin: 0; }
+  .page { width: 192mm; height: 279mm; page-break-after: always; display: flex; flex-direction: column; gap: 3mm; }
+  .page:last-child { page-break-after: auto; }
+  header { display: flex; justify-content: space-between; align-items: center; background: #1f2937; color: #fff; padding: 2.5mm 4mm; border-radius: 2mm; }
+  header h1 { font-size: 14pt; margin: 0; letter-spacing: .5px; }
+  header span { font-size: 9pt; }
+  .box { border: 0.4mm solid #1f2937; border-radius: 2mm; padding: 2mm 3mm; }
+  .box h2 { margin: 0 0 1.5mm; font-size: 9.5pt; text-transform: uppercase; letter-spacing: .6px; color: #b45309; }
+  .row { display: flex; gap: 3mm; }
+  .row > * { flex: 1; }
+  .cb { display: inline-flex; align-items: center; gap: 1.5mm; margin-right: 4mm; white-space: nowrap; line-height: 1.7; }
+  .cb::before { content: ""; width: 3.6mm; height: 3.6mm; border: 0.35mm solid #111; border-radius: 0.6mm; display: inline-block; flex: none; }
+  .line { border-bottom: 0.3mm solid #888; height: 6.2mm; display: flex; align-items: flex-end; font-size: 8.5pt; color: #555; }
+  .line b { color: #111; margin-right: 1.5mm; font-weight: 600; }
+  .grow { flex: 1; min-height: 0; }
+  .schema { border: 0.4mm solid #1f2937; border-radius: 2mm; padding: 2mm 3mm; display: flex; flex-direction: column; }
+  .schema h2 { margin: 0 0 1.5mm; font-size: 9.5pt; text-transform: uppercase; letter-spacing: .6px; color: #b45309; }
+  .grid { flex: 1; border: 0.35mm dashed #555; background-image: linear-gradient(#ddd .2mm, transparent .2mm), linear-gradient(90deg, #ddd .2mm, transparent .2mm); background-size: 5mm 5mm; position: relative; }
+  .grid .lab { position: absolute; font-size: 7.5pt; color: #666; }
+  .obs { display: flex; flex-direction: column; }
+  .obs .ruled { flex: 1; background-image: repeating-linear-gradient(transparent 0, transparent 6mm, #999 6mm, #999 6.25mm); }
+  .three { display: flex; gap: 3mm; }
+  .three .box { flex: 1; }
+  .small { font-size: 8.5pt; color: #444; }
+  ul.chk { list-style: none; padding: 0; margin: 0; }
+  ul.chk li { display: flex; gap: 2mm; align-items: flex-start; margin-bottom: 1.6mm; line-height: 1.25; }
+  ul.chk li::before { content: ""; width: 3.6mm; height: 3.6mm; border: 0.35mm solid #111; border-radius: 0.6mm; flex: none; margin-top: 0.3mm; }
+  .tag { display: inline-block; background: #b45309; color: #fff; font-weight: 700; border-radius: 1.5mm; padding: 0 2mm; margin-right: 1.5mm; }
+  .quote { font-style: italic; color: #333; }
+  .foot { text-align: center; font-size: 8pt; color: #777; margin-top: auto; }
+  .col { display: flex; flex-direction: column; gap: 3mm; }
+</style>
+</head>
+<body>
+
+<!-- ================= RECTO ================= -->
+<div class="page">
+  <header>
+    <h1>FABRA JM — Fiche client</h1>
+    <span>Date : ____ / ____ / ________ &nbsp;&nbsp; N° : ________</span>
+  </header>
+
+  <div class="box">
+    <h2>1. Orientation — situation</h2>
+    <div>
+      <span class="cb"><b>A</b> Premier contact (site / Google)</span>
+      <span class="cb"><b>B</b> Après le devis</span>
+      <span class="cb"><b>C</b> En rendez-vous</span>
+    </div>
+    <div class="small">Arrivé par : <span class="cb">Site internet</span><span class="cb">Pub Google</span><span class="cb">Bouche à oreille</span><span class="cb">Autre : ________</span></div>
+  </div>
+
+  <div class="box">
+    <h2>2. Coordonnées</h2>
+    <div class="row">
+      <div class="line"><b>Nom :</b></div>
+      <div class="line"><b>Prénom :</b></div>
+    </div>
+    <div class="row">
+      <div class="line"><b>Tél. :</b></div>
+      <div class="line"><b>Mail :</b></div>
+    </div>
+    <div class="row">
+      <div class="line" style="flex:2"><b>Adresse du chantier :</b></div>
+      <div class="line"><b>Dispo / créneau :</b></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>3. Projet</h2>
+    <div>
+      <span class="cb">Portail battant</span><span class="cb">Portail coulissant</span><span class="cb">Garde-corps</span><span class="cb">Escalier</span><span class="cb">Grille</span><span class="cb">Mobilier urbain</span><span class="cb">Découpe plasma / laser</span><span class="cb">Autre : ______</span>
+    </div>
+    <div>
+      <span class="cb">Ajouré / barreaudé</span><span class="cb">Tôle pleine</span><span class="cb">Découpe laser</span>
+      &nbsp;|&nbsp; Finition :
+      <span class="cb">Thermolaqué</span><span class="cb">Galva + thermolaqué</span>
+    </div>
+    <div>
+      <span class="cb">Extérieur</span><span class="cb">Bord de mer</span>
+      &nbsp;|&nbsp;
+      <span class="cb">Acier / fer</span><span class="cb">Alu ou inox demandé → je le dis franchement, ce n'est pas mon métier</span>
+    </div>
+    <div class="row">
+      <div class="line"><b>Largeur :</b></div>
+      <div class="line"><b>Hauteur :</b></div>
+      <div class="line"><b>Pose :</b></div>
+    </div>
+    <div class="line"><b>Pourquoi ce projet ? Qu'est-ce qui compte pour lui ?</b></div>
+    <div>
+      <span class="cb">Allure</span><span class="cb">Durée dans le temps</span><span class="cb">Sécurité</span><span class="cb">Prix</span><span class="cb">Délai</span><span class="cb">Service après la pose</span>
+    </div>
+  </div>
+
+  <div class="schema grow">
+    <h2>4. Schéma — vue de face avec cotes</h2>
+    <div class="grid">
+      <span class="lab" style="left:2mm;top:1mm">Largeur ______ mm</span>
+      <span class="lab" style="right:2mm;bottom:1mm">Hauteur ______ mm</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="box">
+      <h2>5. Prix et concurrent</h2>
+      <div class="line"><b>Budget en tête :</b> € </div>
+      <div class="line"><b>Devis concurrent :</b> € </div>
+      <div class="small" style="margin-top:1mm">Comparer ce qui est comparable :</div>
+      <div><span class="cb">Matière</span><span class="cb">Épaisseur</span><span class="cb">Finition</span><span class="cb">Pose</span></div>
+      <div><span class="cb">Qui fabrique</span><span class="cb">Qui revient si souci</span></div>
+      <div class="line"><b>Mon prix annoncé :</b> € </div>
+      <div class="small" style="margin-top:1mm">Si geste, je retire en face (le client choisit) :</div>
+      <div><span class="cb">Finition</span><span class="cb">Option</span><span class="cb">Pose</span></div>
+    </div>
+    <div class="box obs">
+      <h2>6. Observations</h2>
+      <div class="ruled"></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>7. Étape suivante — toujours avec une date</h2>
+    <div>
+      <span class="cb">Métré gratuit</span><span class="cb">Rendez-vous</span><span class="cb">Devis à envoyer</span><span class="cb">Je rappelle</span><span class="cb">Signature</span><span class="cb">Je le laisse partir (prix seul)</span>
+    </div>
+    <div class="row">
+      <div class="line"><b>Date :</b></div>
+      <div class="line"><b>Heure :</b></div>
+      <div class="line"><b>Qui fait quoi :</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= VERSO ================= -->
+<div class="page">
+  <header>
+    <h1>Aide-mémoire — A · B · C</h1>
+    <span>Questionner · Prix sans s'excuser · Comparer · Contrepartie · Date</span>
+  </header>
+
+  <div class="three">
+    <div class="box">
+      <h2><span class="tag">A</span>Premier contact</h2>
+      <p class="small" style="margin:0 0 2mm">Il veut un prix tout de suite, sans rendez-vous.</p>
+      <ul class="chk">
+        <li>Questionné : type de portail, dimensions, usage</li>
+        <li>Demandé ce qui compte pour lui</li>
+        <li>Pas de prix à l'aveugle : « tout est sur mesure, il me faut les dimensions »</li>
+        <li>Pris ses coordonnées (tél. + adresse)</li>
+        <li>Proposé le métré gratuit</li>
+        <li>Fixé date et heure du rendez-vous</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h2><span class="tag">B</span>Après le devis</h2>
+      <p class="small" style="margin:0 0 2mm">Il a mon chiffre, ou moins cher ailleurs, ou plus de nouvelles.</p>
+      <ul class="chk">
+        <li>Demandé si le modèle lui plaît</li>
+        <li>Fait lire l'autre devis ligne par ligne</li>
+        <li>Comparé : matière, épaisseur, finition, pose, qui fabrique, qui revient</li>
+        <li>Aucune baisse sans retrait en face : le client choisit</li>
+        <li>Pas de justification à rallonge</li>
+        <li>Fixé un rappel daté</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h2><span class="tag">C</span>En rendez-vous</h2>
+      <p class="small" style="margin:0 0 2mm">Il est en face de moi et demande un geste.</p>
+      <ul class="chk">
+        <li>Questionné avant de parler prix</li>
+        <li>Montré l'ouvrage en 3D</li>
+        <li>Annoncé le prix sans m'excuser</li>
+        <li>Face au « geste » : retiré une finition, une option ou la pose</li>
+        <li>Demandé la décision ou fixé la prochaine étape</li>
+        <li>Signature, ou rendez-vous daté</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>Mes arguments (ma liste, rien d'autre)</h2>
+    <div class="row">
+      <ul class="chk">
+        <li>Tout est fabriqué dans mon atelier à Pia, par mon équipe</li>
+        <li>Mêmes compagnons qui fabriquent et qui posent</li>
+        <li>Métré sur place et devis gratuits</li>
+        <li>Ouvrage vu en 3D avant la fabrication</li>
+      </ul>
+      <ul class="chk">
+        <li>Acier et fer sur mesure, au millimètre du chantier</li>
+        <li>Thermolaquage ; galvanisation + thermolaquage pour l'extérieur et le bord de mer</li>
+        <li>Atelier à Pia depuis plus de 30 ans : joignable après la pose</li>
+        <li>Avis Google : 4,4 sur 5 · pas d'alu ni d'inox, je le dis franchement</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>Phrases à garder</h2>
+    <ul class="chk">
+      <li class="quote">« Tout est sur mesure : sans les dimensions, je ne vous donne pas un prix au hasard. »</li>
+      <li class="quote">« Prenons son devis ensemble : quelle épaisseur, quelle finition, la pose est-elle comprise, qui revient s'il y a un souci ? »</li>
+      <li class="quote">« Je peux retirer la pose ou le thermolaquage pour me rapprocher : c'est vous qui choisissez. »</li>
+      <li class="quote">« Je passe faire le métré gratuit [jour] à [heure], ça vous va ? »</li>
+      <li class="quote">« Je vous rappelle [jour] à [heure] pour qu'on regarde ça ensemble. »</li>
+    </ul>
+  </div>
+
+  <div class="row">
+    <div class="box">
+      <h2>À éviter</h2>
+      <ul class="chk">
+        <li>Valider son budget avant de connaître le projet</li>
+        <li>Retirer moi-même ma finition sans qu'il le demande</li>
+        <li>Parler tubes et tôles à quelqu'un qui n'y connaît rien</li>
+        <li>« À vous de voir si vous cherchez la qualité ou un prix »</li>
+        <li>Finir par « contactez-moi » sans date</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h2>Mon bilan du jour</h2>
+      <div class="line"><b>Ce qui a marché :</b></div>
+      <div class="line"></div>
+      <div class="line"><b>Ce que je change :</b></div>
+      <div class="line"></div>
+      <div class="line"><b>Résultat :</b> <span class="cb" style="margin-left:2mm">Gagné</span><span class="cb">À relancer</span><span class="cb">Perdu</span></div>
+    </div>
+  </div>
+
+  <div class="schema grow">
+    <h2>Notes libres</h2>
+    <div class="grid"></div>
+  </div>
+
+  <div class="foot">FABRA JM · Pia (66) · Portails, garde-corps, escaliers, grilles, mobilier urbain, découpe plasma et laser</div>
+</div>
+
+</body>
+</html>
